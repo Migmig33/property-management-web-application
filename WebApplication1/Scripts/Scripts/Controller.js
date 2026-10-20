@@ -1,5 +1,22 @@
 ﻿app.controller('controller', function (service, $scope, $timeout, $interval, $http, $sce, $window) {
 
+
+
+    // ==========================================
+    // 3. UI & TOAST NOTIFICATIONS
+    // ==========================================
+    $scope.toast = { toastShow: false, message: '', type: 'error' };
+
+    $scope.showToast = function (message, type) {
+        $scope.toast.message = message;
+        $scope.toast.type = type;
+        $scope.toastShow = true;
+
+        $timeout(function () {
+            $scope.toastShow = false;
+        }, 8000);
+    };
+
     //var systemRefreshTimer = setInterval(function () {
     //    $scope.$applyAsync(function () {
     //        $scope.getAllBrowseUnits();
@@ -307,20 +324,6 @@
         }
     };
 
-    // ==========================================
-    // 3. UI & TOAST NOTIFICATIONS
-    // ==========================================
-    $scope.toast = { toastShow: false, message: '', type: 'error' };
-
-    $scope.showToast = function (message, type) {
-        $scope.toast.message = message;
-        $scope.toast.type = type;
-        $scope.toastShow = true;
-
-        $timeout(function () {
-            $scope.toastShow = false;
-        }, 8000);
-    };
 
     // ==========================================
     // 4. NAVIGATION
@@ -341,7 +344,8 @@
             'AdminDashboard': '/System/AdminDashboard',
             'AdminManagers': '/System/AdminManagers',
             'AdminTables': '/System/AdminTables',
-            'AdminLogs': '/System/AdminLogs'
+            'AdminLogs': '/System/AdminLogs',
+            'TenantProfile': '/System/TenantProfile'
         };
         if (routes[page]) window.location.href = routes[page];
     };
@@ -595,7 +599,7 @@
         if (!$scope.floor) return $scope.showToast("Floor is required", "error");
         if (!$scope.sqm || $scope.sqm <= 0) return $scope.showToast("Size (sqm) must be greater than 0", "error");
         if (!$scope.maxOccupants || $scope.maxOccupants < 1 || $scope.maxOccupants > 20) return $scope.showToast("Max Occupants must be between 1 and 20", "error");
-
+        $scope.isLoading = true;
         var amenityIds = $scope.selectedAmenities().map(function (a) {
             return a.id || a.Id || a.amenityId;
         }).join(',');
@@ -1957,6 +1961,7 @@
         $scope.hasCoOccupants = $scope.currentTenant.additionalOccupants && $scope.currentTenant.additionalOccupants.length > 0;
     };
 
+  
     $scope.handleLogout = function (wasTerminated) {
         $http.post('/Auth/Logout').then(function () {
             $window.location.href = '/System/Auth';
@@ -2090,6 +2095,7 @@
     $scope.browseQuery = '';
     $scope.browseBeds = [];
     $scope.browseAmenities = [];
+    $scope.browseRentTypes = [];
     $scope.browsePriceMin = '';
     $scope.browsePriceMax = '';
 
@@ -2098,6 +2104,7 @@
 
     $scope.BED_OPTIONS = [];
     $scope.AMENITY_OPTIONS = [];
+    $scope.RENT_OPTIONS = [];
 
     $scope.getAllBrowseUnits = function () {
         var handoff = sessionStorage.getItem('browseSearch');
@@ -2111,6 +2118,7 @@
                 $scope.browseUnits = response.data.data || [];
                 $scope.BED_OPTIONS = response.data.bedOptions || [];
                 $scope.AMENITY_OPTIONS = response.data.amenityOptions || [];
+                $scope.RENT_OPTIONS = response.data.rentTypeOptions || [];
 
                 $scope.browseCount = $scope.browseUnits.length;
 
@@ -2151,7 +2159,12 @@
                 $scope.browseAmenities.every(a => u.amenities && u.amenities.indexOf(a) !== -1)
             );
         }
-
+        if ($scope.browseRentTypes.length > 0) {
+            list = list.filter(u => {
+                var rentType = u.joinable ? "Bedspace" : "Vacant";
+                return $scope.browseRentTypes.indexOf(rentType) !== -1;
+            })
+        }
         if ($scope.browsePriceMin) {
             list = list.filter(u => u.price >= parseInt($scope.browsePriceMin));
         }
@@ -2183,6 +2196,11 @@
         if (idx === -1) $scope.browseBeds.push(bed);
         else $scope.browseBeds.splice(idx, 1);
     };
+    $scope.toggleRent = function (rent) {
+        var idx = $scope.browseRentTypes.indexOf(rent);
+        if (idx === -1) $scope.browseRentTypes.push(rent);
+        else $scope.browseRentTypes.splice(idx, 1);
+    }
 
     $scope.toggleAmenity = function (amenity) {
         var idx = $scope.browseAmenities.indexOf(amenity);
@@ -2495,6 +2513,19 @@
         }
     };
 
+    $scope.bkOtpBack = function (index) {
+        if (event.key === 'Backspace') { 
+            event.preventDefault();
+
+            if ($scope.bkOtp[index]) {
+                $scope.bkOtp[index] = '';
+            } else if (index > 0) {
+                $scope.bkOtp[index - 1] = '';
+                document.getElementById('bkOtp' + (index - 1)).focus();
+            }
+        } 
+    }
+    
     $scope.bkVerify = function () {
         var code = $scope.bkOtp.join('');
         if (code.length < 6) {
@@ -3350,5 +3381,291 @@
             default: return 'bg-slate-100 text-slate-500';
         }
     };
+
+    $scope.allowLetterOnly = function ($event) {
+        var input = $event.target;
+        var value = input.value;
+
+        // Allow letters and spaces only
+        var cleaned = value.replace(/[^\p{L}\s]/gu, '');
+
+        if (value !== cleaned) {
+            var cursor = input.selectionStart;
+            var removedBeforeCursor = value.slice(0, cursor)
+                .replace(/[^\p{L}\s]/gu, '').length;
+
+            $scope.bkName = cleaned;
+
+            setTimeout(function () {
+                input.setSelectionRange(removedBeforeCursor, removedBeforeCursor);
+            }, 0);
+        }
+    };
+
+
+    //notify of failed pdc payments
+    $scope.sendPaymentNotification = function (tenantId) {
+        $scope.isSending = true;
+        service.sendPaymentNotifcationService(tenantId).then(function (response) {
+            if (response.data.success == true) {
+                $scope.showToast( response.data.message || 'Notification has been sent!', "success");
+            } else {
+                $scope.showToast(response.data.message, 'error');
+            }
+        })
+        .catch(function (error) {
+             $scope.showToast('Failed to send payment notification.', 'error');
+        }).finally(function () {
+            $scope.isSending = false;
+        })
+    }
+    $scope.exportLogs = function () {
+        $scope.isExporting = true;
+        service.exportLogsService()
+            .then(function () {
+                $scope.showToast("CSV file downloaded successfully", "success");
+            })
+            .catch(function (error) {
+                console.error("Export failed:", error);
+                $scope.showToast("Failed to export CSV file", "error");
+            })
+            .finally(function () {
+                $scope.isExporting = false;
+            });
+    }
+
+    $scope.isEditingProfile = false;
+    $scope.showProfileReasonModal = false;
+    $scope.profileChangeReason = "";
+    $scope.isSavingProfile = false;
+
+    $scope.startEditProfile = function () {
+        $scope.originalTenantProfile = angular.copy($scope.currentTenant);
+        $scope.isEditingProfile = true;
+    };
+
+    // Open the reason modal when Save Changes is clicked
+    $scope.openProfileChangeReasonModal = function () {
+        $scope.profileChangeReason = "";
+        $scope.showProfileReasonModal = true;
+    };
+
+    // Close the modal without submitting
+    $scope.closeProfileReasonModal = function () {
+        if ($scope.isSavingProfile) return;
+
+        $scope.showProfileReasonModal = false;
+        $scope.profileChangeReason = "";
+    };
+
+
+    $scope.handleSaveProfile = function () {
+        // ---- Validation ----
+        if (!$scope.currentTenant.phone) {
+
+            return $scope.showToast("Number cannot be empty", "error");
+        }
+
+        if (
+            !$scope.currentTenant.email ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($scope.currentTenant.email)
+        ) {
+
+            return $scope.showToast("Valid email is required", "error");
+
+        }
+
+        if (!$scope.currentTenant.occupation) {
+
+            return $scope.showToast("Occupation cannot be empty", "error");
+
+        }
+
+        if (!$scope.currentTenant.address) {
+
+            return $scope.showToast("Address cannot be empty", "error");
+        }
+
+        if (!reason || !reason.trim()) {
+
+            return $scope.showToast("Please enter a reason for the profile change", "error");
+        }
+
+        var data = {
+            id: $scope.id,
+            requestedEmail: $scope.currentTenant.email,
+            requestedPhone: $scope.currentTenant.phone,
+            requestedOccupation: $scope.currentTenant.occupation,
+            requestedAddress: $scope.currentTenant.address,
+            reason: reason.trim(),
+            status: $scope.status || "pending",
+            reviewNotes: $scope.reviewNotes || null
+        };
+
+       
+
+        // Pass data to the service (see service example below)
+        service.saveTenantProfileRequestService(data)
+            .then(function (response) {
+                if (response.data.success) {
+                    $scope.showToast(response.data.message, "success");
+
+                    // Close only after successful submission
+                    $scope.showProfileReasonModal = false;
+                    $scope.isEditingProfile = false;
+                    $scope.profileChangeReason = "";
+                    $scope.originalTenantProfile = null;
+                } else {
+                    $scope.showToast(response.data.message, "error");
+                }
+            })
+            .catch(function (error) {
+                $scope.showToast(
+                    "There is a problem saving your request right now",
+                    "error"
+                );
+            })
+            .finally(function () {
+                $scope.isSavingProfile = false;
+            });
+    };
+
+    $scope.cancelEditProfile = function () {
+        if ($scope.originalTenantProfile) {
+            $scope.currentTenant = angular.copy($scope.originalTenantProfile);
+        }
+
+        $scope.isEditingProfile = false;
+        $scope.showProfileReasonModal = false;
+        $scope.profileChangeReason = "";
+        $scope.originalTenantProfile = null;
+    };
+
+    $scope.showTenantProfileRequestsModal = false;
+    $scope.isLoadingTenantProfileRequests = false;
+    $scope.tenantProfileRequestsError = null;
+    $scope.selectedProfileRequestTenantId = null;
+    $scope.tenant_profile_request = [];
+
+    $scope.openTenantProfileRequestsModal = function (tenantId) {
+        $scope.selectedProfileRequestTenantId = tenantId;
+        $scope.showTenantProfileRequestsModal = true;
+
+        $scope.getTenantProfileRequestChange();
+    };
+
+    $scope.closeTenantProfileRequestsModal = function () {
+        $scope.showTenantProfileRequestsModal = false;
+    };
+
+    $scope.filteredTenantProfileRequests = function () {
+        var requests = $scope.tenant_profile_request || [];
+        var tenantId = $scope.selectedProfileRequestTenantId;
+
+        if (tenantId === null || tenantId === undefined) {
+            return requests;
+        }
+
+        return requests.filter(function (request) {
+            return String(request.Tid) === String(tenantId);
+        });
+    };
+
+    $scope.getTenantProfileRequestChange = function () {
+        $scope.isLoadingTenantProfileRequests = true;
+        $scope.tenantProfileRequestsError = null;
+
+        return service.getTenantProfileRequestChangeService()
+            .then(function (response) {
+                if (response.data && response.data.success) {
+                    $scope.tenant_profile_request =
+                        response.data.profile_requests || [];
+                } else {
+                    $scope.tenantProfileRequestsError =
+                        (response.data && response.data.message) ||
+                        'Unable to retrieve profile change requests.';
+
+                    $scope.showToast(
+                        $scope.tenantProfileRequestsError,
+                        "error"
+                    );
+                }
+            })
+            .catch(function (error) {
+                console.error(
+                    "Error retrieving tenant profile change requests:",
+                    error
+                );
+
+                $scope.tenantProfileRequestsError =
+                    "There is a problem retrieving requests right now.";
+
+                $scope.showToast(
+                    $scope.tenantProfileRequestsError,
+                    "error"
+                );
+            })
+            .finally(function () {
+                $scope.isLoadingTenantProfileRequests = false;
+            });
+    };
+
+
+    $scope.getTenantCurrentValue = function (tenantId, field) {
+        // Change $scope.tenants to the array used by your tenant table.
+        var tenants = $scope.tenants || [];
+
+        var tenant = tenants.find(function (t) {
+            return String(t.Tid) === String(tenantId);
+        });
+
+        if (!tenant) return '';
+
+        var fields = {
+            email: ['email', 'Email', 'emailAddress'],
+            phone: ['phone', 'Phone', 'phoneNumber'],
+            occupation: ['occupation', 'Occupation'],
+            address: ['address', 'Address']
+        };
+
+        var names = fields[field] || [];
+
+        for (var i = 0; i < names.length; i++) {
+            var value = tenant[names[i]];
+
+            if (value !== undefined && value !== null && value !== '') {
+                return value;
+            }
+        }
+
+        return '';
+    };
+
+    $scope.updateStatusTenantProfileRequest = function (id, status, Tid, reviewNotes) {
+        alert(id + status + Tid + reviewNotes)
+        if (status == null) {
+            return $scope.showToast("Invalid status request", "error");
+        }
+        var data = {
+            id: id,
+            Tid: Tid,
+            status: status,
+            reviewNotes: reviewNotes || status
+        }
+        service.updateStatusTenantProfileRequestService(data).then(function (response) {
+            if (response.data.success) {
+                $scope.showToast(response.data.message, "success");
+                $scope.showTenantProfileRequestsModal = false;
+                $scope.getTenantProfileRequestChange();
+            } else {
+                $scope.showToast(response.data.message, "error")
+            }
+        }).catch(function (error) {
+            $scope.showToast("There is a problem on updating the request right now.", "error");
+        }).finally(function (){
+            $scope.isReviewingProfileRequest = false;
+        })
+    }
+
 
 });

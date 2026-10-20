@@ -27,6 +27,7 @@ namespace WebApplication1.Models.Context
         public virtual DbSet<sms_log> sms_log { get; set; }
         public virtual DbSet<busy_schedule> busy_schedule { get; set; }
         public virtual DbSet<audit_log> audit_log { get; set; }
+        public virtual DbSet<tenant_profile_change_request> tenant_profile_change_request { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -44,6 +45,7 @@ namespace WebApplication1.Models.Context
             modelBuilder.Configurations.Add(new Maps.admin_maps());
             modelBuilder.Configurations.Add(new Maps.busy_schedule_maps());
             modelBuilder.Configurations.Add(new Maps.audit_log_maps());
+            modelBuilder.Configurations.Add(new Maps.tenant_profile_change_request_maps());
         }
 
     }

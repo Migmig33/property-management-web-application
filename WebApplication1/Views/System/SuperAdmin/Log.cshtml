@@ -1,13 +1,32 @@
 ﻿@{
     Layout = "~/Views/Shared/_SuperAdminLayout.cshtml";
 }
+
+<!-- Toast Notification -->
+<div ng-show="toastShow" ng-cloak
+     style="animation: slideDown 0.5s ease-in-out"
+     class="fixed top-4 right-4 z-[100] flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-2xl px-5 py-4 w-[400px] max-w-full transition-all duration-300">
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-gray-900 shrink-0">
+        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 8a.75.75 0 00-1.5 0v4a.75.75 0 001.5 0V8zM12 16a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+    </svg>
+
+    <span class="text-slate-800 font-medium text-[15px]">{{ toast.message }}</span>
+</div>
 <div class="p-4 sm:p-6 space-y-6" ng-init="initAudit(); currentPage = 'audit'; " ng-cloak>
-    <div>
-        <h1 class="text-slate-900 text-xl font-semibold">Audit Trail</h1>
-        <p ng-if="!isLoading" class="text-slate-500 text-sm">
-            Full history of system events, user actions, and security incidents.
-        </p>
-        <div ng-if="isLoading" class="h-4 w-64 bg-slate-200 rounded animate-pulse mt-1"></div>
+    <div class="flex justify-between">
+        <div>
+            <h1 class="text-slate-900 text-xl font-semibold">Audit Trail</h1>
+            <p ng-if="!isLoading" class="text-slate-500 text-sm">
+                Full history of system events, user actions, and security incidents.
+            </p>
+            <div ng-if="isLoading" class="h-4 w-64 bg-slate-200 rounded animate-pulse mt-1"></div>
+        </div>
+        <div>
+            <button type="button" ng-click="exportLogs()" class="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-green-500">
+                Export Logs
+            </button>
+        </div>
     </div>
 
     <div ng-if="isLoading" class="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-pulse">

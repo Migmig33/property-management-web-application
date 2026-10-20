@@ -14,7 +14,7 @@
     <span class="text-slate-800 font-medium text-[15px]">{{ toast.message }}</span>
 </div>
 
-<div class="p-6 flex flex-col min-w-0 overflow-hidden" ng-init="isLoading = true; currentPage = 'Tenant'; getAllTenants(); getAllUnits();">
+<div class="p-6 flex flex-col min-w-0 overflow-hidden" ng-init="isLoading = true; currentPage = 'Tenant'; getAllTenants(); getAllUnits(); getTenantProfileRequestChange();">
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
@@ -305,7 +305,7 @@
                             </span>
                         </td>
 
-                     
+
 
                         <!-- IDs -->
                         <td class="px-5 py-3 whitespace-nowrap">
@@ -314,13 +314,46 @@
                             </span>
                         </td>
 
+
                         <!-- Actions -->
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-2">
-                                <button ng-if="t.isJoinable" ng-click="triggerEditTenant(t)"
+
+                                <button type="button"
+                                        ng-click="openTenantProfileRequestsModal(t.Tid)"
+                                        title="View profile change requests"
+                                        aria-label="View tenant profile change requests"
+                                        class="relative p-1.5 rounded-lg
+               text-green-600 hover:text-green-800
+               hover:bg-green-50
+               transition-all duration-200">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         width="20"
+                                         height="20"
+                                         viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="2"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round">
+
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <path d="M14 2v6h6" />
+                                        <path d="M8 13h8" />
+                                        <path d="M8 17h8" />
+
+                                    </svg>
+                                </button>
+
+                                <!-- Add Bedspacer -->
+                                <button ng-if="t.isJoinable"
+                                        ng-click="triggerEditTenant(t)"
                                         title="Add a bedspacer to this unit"
                                         class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-400 hover:text-blue-600 transition-all">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                                    <svg width="15" height="15" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
                                         <line x1="19" x2="19" y1="8" y2="14" />
@@ -328,14 +361,25 @@
                                     </svg>
                                 </button>
 
-                                <button ng-click="triggerEditTenant(t)" class="p-1.5 rounded-lg hover:bg-green-50 text-slate-400 hover:text-green-600 transition-all">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <!-- Edit Tenant -->
+                                <button ng-click="triggerEditTenant(t)"
+                                        title="Edit tenant"
+                                        class="p-1.5 rounded-lg hover:bg-green-50 text-slate-400 hover:text-green-600 transition-all">
+
+                                    <svg width="15" height="15" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                     </svg>
                                 </button>
-                                <button ng-click="triggerConfirmDeleteTenant(t.Tid)" class="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-all">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+                                <!-- Delete Tenant -->
+                                <button ng-click="triggerConfirmDeleteTenant(t.Tid)"
+                                        title="Delete tenant"
+                                        class="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-all">
+
+                                    <svg width="15" height="15" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6" />
                                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                                         <path d="M10 11v6" />
@@ -343,8 +387,10 @@
                                         <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                                     </svg>
                                 </button>
+
                             </div>
                         </td>
+
                     </tr>
 
                     <tr ng-if="filteredTenants().length === 0">
@@ -469,7 +515,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm text-slate-700 font-medium mb-1">Full Name *</label>
-                    <input type="text" id="fieldName" ng-model="name" placeholder="Full name"
+                    <input type="text" id="fieldName" ng-model="name" placeholder="Full name" ng-keyup="allowLettersOnly($event)"
                            maxlength="50" oninput="this.value = this.value.replace(/[^a-zA-Z\sñÑ]/g, '')"
                            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
                     <p class="text-[10px] text-right mt-1" ng-class="name.length >= 50 ? 'text-red-500 font-bold' : 'text-slate-400'">{{ name.length || 0 }}/50</p>
@@ -484,7 +530,7 @@
 
                 <div>
                     <label class="block text-sm text-slate-700 font-medium mb-1">Phone</label>
-                    <input type="tel" id="fieldPhone" ng-model="phone" placeholder="09XXXXXXXXX"
+                    <input type="number" id="fieldPhone" ng-model="phone" placeholder="09XXXXXXXXX"
                            maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
                     <p class="text-[10px] text-right mt-1" ng-class="phone.length >= 11 ? 'text-red-500 font-bold' : 'text-slate-400'">{{ phone.length || 0 }}/11</p>
@@ -615,14 +661,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block text-xs text-slate-600 font-medium mb-1">Full Name *</label>
-                            <input type="text" ng-model="occ.name" placeholder="Full name"
+                            <input type="text" ng-model="occ.name" placeholder="Full name" ng-keyup="allowLettersOnly($event)"
                                    maxlength="50" oninput="this.value = this.value.replace(/[^a-zA-Z\sñÑ]/g, '')"
                                    class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
                             <p class="text-[10px] text-right mt-1" ng-class="occ.name.length >= 50 ? 'text-red-500 font-bold' : 'text-slate-400'">{{ occ.name.length || 0 }}/50</p>
                         </div>
                         <div>
                             <label class="block text-xs text-slate-600 font-medium mb-1">Phone *</label>
-                            <input type="tel" ng-model="occ.phone" placeholder="09XXXXXXXXX"
+                            <input type="number" ng-model="occ.phone" placeholder="09XXXXXXXXX"
                                    maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                    class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
                             <p class="text-[10px] text-right mt-1" ng-class="occ.phone.length >= 11 ? 'text-red-500 font-bold' : 'text-slate-400'">{{ occ.phone.length || 0 }}/11</p>
@@ -707,3 +753,361 @@
         </div>
     </div>
 </div>
+
+<!-- Tenant Profile Change Requests Modal -->
+<div ng-show="showTenantProfileRequestsModal"
+     ng-cloak
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+     ng-click="closeTenantProfileRequestsModal()">
+
+    <div class="flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+         ng-click="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-green-100 bg-green-50 px-6 py-5">
+            <div class="flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-6 w-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M19 8v6m3-3h-6" />
+                    </svg>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">
+                        Profile Change Requests
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500">
+                        Review and manage tenant profile updates
+                    </p>
+                </div>
+            </div>
+
+            <button type="button"
+                    ng-click="closeTenantProfileRequestsModal()"
+                    class="rounded-lg p-2 text-gray-400 transition hover:bg-green-100 hover:text-gray-700"
+                    aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-6 w-6"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+
+            <!-- Loading -->
+            <div ng-if="isLoadingTenantProfileRequests"
+                 class="flex flex-col items-center justify-center py-16">
+                <svg class="mb-3 h-9 w-9 animate-spin text-green-600"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24">
+                    <circle class="opacity-25"
+                            cx="12" cy="12" r="10"
+                            stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <p class="text-sm font-medium text-gray-500">
+                    Loading profile change requests...
+                </p>
+            </div>
+
+            <!-- Error -->
+            <div ng-if="!isLoadingTenantProfileRequests && tenantProfileRequestsError"
+                 class="rounded-xl border border-red-200 bg-red-50 p-5 text-center">
+                <p class="font-semibold text-red-700">
+                    Unable to load requests
+                </p>
+                <p class="mt-1 text-sm text-red-600">
+                    {{ tenantProfileRequestsError }}
+                </p>
+                <button type="button"
+                        ng-click="getTenantProfileRequestChange()"
+                        class="mt-3 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700">
+                    Try Again
+                </button>
+            </div>
+
+            <!-- Empty state -->
+            <div ng-if="!isLoadingTenantProfileRequests &&
+                        !tenantProfileRequestsError &&
+                        filteredTenantProfileRequests().length === 0"
+                 class="rounded-xl border border-gray-200 bg-white py-14 text-center">
+                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-7 w-7 text-green-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="1.7"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-800">
+                    No profile change requests
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    There are no requests for this tenant.
+                </p>
+            </div>
+
+            <!-- Request cards -->
+            <div ng-if="!isLoadingTenantProfileRequests &&
+                 !tenantProfileRequestsError &&
+                 filteredTenantProfileRequests().length>
+                0"
+                class="space-y-6">
+
+                <div ng-repeat="request in filteredTenantProfileRequests() track by request.id"
+                     class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+
+                    <!-- Request heading -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-4">
+                        <div>
+                            <h3 class="font-bold text-gray-800">
+                                Request #{{ request.id }}
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                Tenant ID: {{ request.Tid }}
+                                <span class="mx-1">•</span>
+                                Submitted: {{ request.requestedAt || 'Not available' }}
+                            </p>
+                        </div>
+
+                        <span class="rounded-full px-3 py-1 text-xs font-bold capitalize"
+                              ng-class="{
+                                'bg-yellow-100 text-yellow-800':
+                                    (request.status || '').toLowerCase() === 'pending',
+                                'bg-green-100 text-green-800':
+                                    (request.status || '').toLowerCase() === 'accepted',
+                                'bg-red-100 text-red-800':
+                                    (request.status || '').toLowerCase() === 'declined'
+                            }">
+                            {{ request.status || 'Pending' }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-5 p-5">
+
+                        <!-- Current vs requested values -->
+                        <div>
+                            <h4 class="mb-3 text-sm font-bold uppercase tracking-wide text-gray-700">
+                                Requested Profile Changes
+                            </h4>
+
+                            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                                <table class="w-full min-w-[560px] text-left text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 font-semibold text-gray-600">
+                                                Profile Field
+                                            </th>
+                                            <th class="px-4 py-3 font-semibold text-gray-600">
+                                                Current Value
+                                            </th>
+                                            <th class="px-4 py-3 font-semibold text-green-700">
+                                                Requested Value
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="divide-y divide-gray-100">
+                                        <!-- Email -->
+                                        <tr>
+                                            <td class="px-4 py-3 font-medium text-gray-700">
+                                                Email
+                                            </td>
+                                            <td class="break-all px-4 py-3 text-gray-500">
+                                                {{ getTenantCurrentValue(request.Tid, 'email') || 'Not available' }}
+                                            </td>
+                                            <td class="break-all px-4 py-3 font-medium text-green-700">
+                                                {{ request.requestedEmail || 'No change requested' }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- Phone -->
+                                        <tr>
+                                            <td class="px-4 py-3 font-medium text-gray-700">
+                                                Phone
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-500">
+                                                {{ getTenantCurrentValue(request.Tid, 'phone') || 'Not available' }}
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-green-700">
+                                                {{ request.requestedPhone || 'No change requested' }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- Occupation -->
+                                        <tr>
+                                            <td class="px-4 py-3 font-medium text-gray-700">
+                                                Occupation
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-500">
+                                                {{ getTenantCurrentValue(request.Tid, 'occupation') || 'Not available' }}
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-green-700">
+                                                {{ request.requestedOccupation || 'No change requested' }}
+                                            </td>
+                                        </tr>
+
+                                        <!-- Address -->
+                                        <tr>
+                                            <td class="px-4 py-3 font-medium text-gray-700">
+                                                Address
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-500">
+                                                {{ getTenantCurrentValue(request.Tid, 'address') || 'Not available' }}
+                                            </td>
+                                            <td class="px-4 py-3 font-medium text-green-700">
+                                                {{ request.requestedAddress || 'No change requested' }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tenant reason -->
+                        <div class="rounded-lg border border-blue-100 bg-blue-50 p-4">
+                            <h4 class="mb-2 flex items-center gap-2 text-sm font-bold text-blue-800">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="h-5 w-5"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="1.8"
+                                          d="M8 10h8M8 14h5m-8 6l-1-4a9 9 0 1116 0l-1 4H5z" />
+                                </svg>
+                                Tenant's Reason
+                            </h4>
+                            <p class="whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-700">
+                                {{ request.reason || 'No reason provided.' }}
+                            </p>
+                        </div>
+
+                        <!-- Previous review details -->
+                        <div ng-if="(request.status || '').toLowerCase() !== 'pending' &&
+                             (request.status || '' ).length
+                            "
+                            class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <h4 class="mb-2 text-sm font-bold text-gray-700">
+                                Review Details
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold">Reviewed at:</span>
+                                {{ request.reviewedAt || 'Not available' }}
+                            </p>
+                            <p class="mt-2 whitespace-pre-wrap break-words text-sm text-gray-600">
+                                <span class="font-semibold">Review note:</span>
+                                {{ request.reviewNotes || 'No review note provided.' }}
+                            </p>
+                        </div>
+
+                        <!-- Review note and actions -->
+                        <div ng-if="(request.status || 'pending').toLowerCase() === 'pending'"
+                             class="border-t border-gray-100 pt-5">
+
+                            <label class="mb-2 block text-sm font-bold text-gray-800">
+                                Review Note
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <textarea ng-model="request.reviewNotes"
+                                      rows="3"
+                                      maxlength="1000"
+                                      placeholder="Enter your reason for accepting or declining this request..."
+                                      class="w-full resize-y rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100">
+                            </textarea>
+
+                            <div class="mt-1 text-right text-xs text-gray-400">
+                                {{ (request.reviewNotes || '').length }}/1000 characters
+                            </div>
+
+                            <!-- Accept / Decline buttons -->
+                            <div class="mt-4 flex flex-wrap gap-3">
+                                <button type="button"
+                                        ng-click="updateStatusTenantProfileRequest(request.id, 'accepted', request.Tid, request.reviewNotes)"
+                                        ng-disabled="isReviewingProfileRequest || !request.reviewNotes"
+                                        class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="h-5 w-5"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor"
+                                         stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Accept Request
+                                </button>
+
+                                <button type="button"
+                                        ng-click="updateStatusTenantProfileRequest(request.id, 'declined', request.Tid, request.reviewNotes)"
+                                        
+                                        ng-disabled="isReviewingProfileRequest || !request.reviewNotes"
+                                        class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                         class="h-5 w-5"
+                                         fill="none"
+                                         viewBox="0 0 24 24"
+                                         stroke="currentColor"
+                                         stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Decline Request
+                                </button>
+                            </div>
+
+                        
+                          
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 bg-white px-6 py-4">
+            <p class="text-xs text-gray-500">
+                Review each request carefully before approving changes.
+            </p>
+
+            <div class="flex gap-3">
+                <button type="button"
+                        ng-click="getTenantProfileRequestChange()"
+                        ng-disabled="isLoadingTenantProfileRequests"
+                        class="rounded-lg border border-green-200 bg-white px-4 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-50 disabled:opacity-50">
+                    Refresh
+                </button>
+
+                <button type="button"
+                        ng-click="closeTenantProfileRequestsModal()"
+                        class="rounded-lg bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,66 +1,90 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\",
+  "WorkspaceRootPath": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\services\\notificationchecker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\services\\notificationchecker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\services\\smsservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\services\\smsservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\services\\smsscheduler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\services\\smsscheduler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\controllers\\aicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\aicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\views\\system\\tenantportal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\tenantportal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\controllers\\tenantportalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\tenantportalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\webapplication1\\views\\system\\admin\\maintenance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\admin\\maintenance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\controllers\\systemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\systemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\webapplication1\\scripts\\scripts\\controller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\quise\\onedrive\\desktop\\property-management-application\\webapplication1\\scripts\\scripts\\controller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\scripts\\scripts\\controller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\models\\tables\\maintenance_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\tables\\maintenance_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\scripts\\scripts\\service.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\scripts\\scripts\\service.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\views\\shared\\_tenantlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\shared\\_tenantlayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\models\\tables\\tenant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\tables\\tenant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\views\\system\\admin\\tenants.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\admin\\tenants.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\admin\\tenants.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\tenantportal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\tenantportal.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\controllers\\systemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\systemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\controllers\\tenantportalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\tenantportalcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\models\\tables\\tenant_profile_change_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\tables\\tenant_profile_change_request.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\models\\tables\\busy_schedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\tables\\busy_schedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\models\\tables\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\tables\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\models\\maps\\unit_image_maps.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\models\\maps\\unit_image_maps.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\appsettings.local.config||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\appsettings.local.config||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\tenantprofile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\tenantprofile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\admin\\payments.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\admin\\payments.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\aldwin florante\\desktop\\folder3\\bigtime-main - copy\\webapplication1\\views\\shared\\_renterslayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\auth.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\auth.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\shared\\_renterslayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\shared\\_renterslayout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\webapplication1\\views\\system\\admin\\units.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\admin\\units.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\favicon.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\favicon.ico||{177559E0-D141-11D0-92DF-00A0C9138C45}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\webapplication1\\views\\system\\admin\\maintenance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\views\\system\\admin\\maintenance.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -70,95 +94,67 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "NotificationChecker.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\NotificationChecker.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Services\\NotificationChecker.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\NotificationChecker.cs",
-              "RelativeToolTip": "WebApplication1\\Services\\NotificationChecker.cs",
-              "ViewState": "AgIAAMIAAAAAAAAAAAAgwM8AAAAiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T16:11:36.074Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "SmsServices.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\SmsServices.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Services\\SmsServices.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\SmsServices.cs",
-              "RelativeToolTip": "WebApplication1\\Services\\SmsServices.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAA3wAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T16:11:03.498Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SmsScheduler.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\SmsScheduler.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Services\\SmsScheduler.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Services\\SmsScheduler.cs",
-              "RelativeToolTip": "WebApplication1\\Services\\SmsScheduler.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAwEUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T16:10:13.032Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AIController.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\AIController.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\AIController.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\AIController.cs",
-              "RelativeToolTip": "WebApplication1\\Controllers\\AIController.cs",
-              "ViewState": "AgIAAEYAAAAAAAAAAAAQwE4AAAA4AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T16:07:55.141Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "maintenance_request.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Models\\Tables\\maintenance_request.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Models\\Tables\\maintenance_request.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Models\\Tables\\maintenance_request.cs",
-              "RelativeToolTip": "WebApplication1\\Models\\Tables\\maintenance_request.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA8AAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T16:06:13.67Z",
-              "EditorCaption": ""
+              "DocumentIndex": 11,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\Web.config",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\Web.config",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\Web.config",
+              "RelativeToolTip": "WebApplication1\\Views\\Web.config",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA4AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-10-18T12:37:23.562Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "SystemController.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\SystemController.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\SystemController.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\SystemController.cs",
-              "RelativeToolTip": "WebApplication1\\Controllers\\SystemController.cs",
-              "ViewState": "AgIAADEDAAAAAAAAAAAAwEIDAABCAAAAAAAAAA==",
+              "Title": "tenant_profile_change_request.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\tenant_profile_change_request.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Models\\Tables\\tenant_profile_change_request.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\tenant_profile_change_request.cs",
+              "RelativeToolTip": "WebApplication1\\Models\\Tables\\tenant_profile_change_request.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T12:16:13.742Z",
+              "WhenOpened": "2026-10-18T10:46:47.652Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Tenants.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Tenants.cshtml*",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Tenants.cshtml*",
+              "ViewState": "AgIAABIEAAAAAAAAAAAAACgEAABbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-13T15:30:42.882Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 4,
+              "Title": "TenantPortal.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\TenantPortal.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\TenantPortal.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\TenantPortal.cshtml",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\TenantPortal.cshtml",
+              "ViewState": "AgIAAFMCAAAAAAAAAAAAAFACAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-13T15:30:49.191Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "Controller.js",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Scripts\\Scripts\\Controller.js",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Scripts\\Scripts\\Controller.js",
               "RelativeDocumentMoniker": "WebApplication1\\Scripts\\Scripts\\Controller.js",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Scripts\\Scripts\\Controller.js",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Scripts\\Scripts\\Controller.js",
               "RelativeToolTip": "WebApplication1\\Scripts\\Scripts\\Controller.js",
-              "ViewState": "AgIAAOAHAAAAAAAAAAAiwO0HAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAADsOAAAAAAAAAADwvzwOAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-09-13T11:51:48.612Z",
               "EditorCaption": ""
@@ -166,106 +162,198 @@
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "TenantPortalController.cs",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\TenantPortalController.cs",
-              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\TenantPortalController.cs",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Controllers\\TenantPortalController.cs",
-              "RelativeToolTip": "WebApplication1\\Controllers\\TenantPortalController.cs",
-              "ViewState": "AgIAAGgAAAAAAAAAAAAowHUAAAAAAAAAAAAAAA==",
+              "Title": "SystemController.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\SystemController.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\SystemController.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\SystemController.cs",
+              "RelativeToolTip": "WebApplication1\\Controllers\\SystemController.cs",
+              "ViewState": "AgIAAPYJAAAAAAAAAAAAwJYKAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-13T15:33:34.807Z",
+              "WhenOpened": "2026-09-13T12:16:13.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "tenant.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\tenant.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Models\\Tables\\tenant.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\tenant.cs",
+              "RelativeToolTip": "WebApplication1\\Models\\Tables\\tenant.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T12:43:21.717Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "Maintenance.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
-              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
-              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
-              "ViewState": "AgIAAEwBAAAAAAAAAAAhwFcBAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T11:50:41.225Z",
+              "Title": "TenantPortalController.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\TenantPortalController.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\TenantPortalController.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\TenantPortalController.cs",
+              "RelativeToolTip": "WebApplication1\\Controllers\\TenantPortalController.cs",
+              "ViewState": "AgIAAM8AAAAAAAAAAAAUwNoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T10:47:10.751Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "TenantPortal.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\TenantPortal.cshtml",
-              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\TenantPortal.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\TenantPortal.cshtml",
-              "RelativeToolTip": "WebApplication1\\Views\\System\\TenantPortal.cshtml",
-              "ViewState": "AgIAAEYBAAAAAAAAAAAwwFkBAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T15:30:49.191Z",
+              "DocumentIndex": 1,
+              "Title": "Service.js",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Scripts\\Scripts\\Service.js",
+              "RelativeDocumentMoniker": "WebApplication1\\Scripts\\Scripts\\Service.js",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Scripts\\Scripts\\Service.js",
+              "RelativeToolTip": "WebApplication1\\Scripts\\Scripts\\Service.js",
+              "ViewState": "AgIAALsBAAAAAAAAAAAAAMcBAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-10-18T12:12:10.21Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "unit_image_maps.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Maps\\unit_image_maps.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Models\\Maps\\unit_image_maps.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Maps\\unit_image_maps.cs",
+              "RelativeToolTip": "WebApplication1\\Models\\Maps\\unit_image_maps.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T12:43:17.879Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "booking.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\booking.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Models\\Tables\\booking.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\booking.cs",
+              "RelativeToolTip": "WebApplication1\\Models\\Tables\\booking.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T12:43:19.618Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "busy_schedule.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\busy_schedule.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Models\\Tables\\busy_schedule.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Models\\Tables\\busy_schedule.cs",
+              "RelativeToolTip": "WebApplication1\\Models\\Tables\\busy_schedule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T12:43:20.41Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 12,
+              "Title": "Appsettings.Local.config",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Appsettings.Local.config",
+              "RelativeDocumentMoniker": "WebApplication1\\Appsettings.Local.config",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Appsettings.Local.config",
+              "RelativeToolTip": "WebApplication1\\Appsettings.Local.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-10-18T12:37:02.22Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "TenantProfile.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\TenantProfile.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\TenantProfile.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\TenantProfile.cshtml",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\TenantProfile.cshtml",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAAAEwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-18T10:36:40.449Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Payments.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Payments.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Payments.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Payments.cshtml",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Payments.cshtml",
+              "ViewState": "AgIAAIcBAAAAAAAAAAAAAJgBAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-10-10T11:06:40.18Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "favicon.ico - Icon [16x16, 32 bit, BMP]",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\favicon.ico",
+              "RelativeDocumentMoniker": "WebApplication1\\favicon.ico",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\favicon.ico - Icon [16x16, 32 bit, BMP]",
+              "RelativeToolTip": "WebApplication1\\favicon.ico - Icon [16x16, 32 bit, BMP]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001525|",
+              "WhenOpened": "2026-10-10T08:55:43.931Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "Web.config",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Web.config",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Web.config",
               "RelativeDocumentMoniker": "WebApplication1\\Web.config",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Web.config",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Web.config",
               "RelativeToolTip": "WebApplication1\\Web.config",
-              "ViewState": "AgIAACsAAAAAAAAAAAAAADoAAAA+AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
               "WhenOpened": "2026-09-13T15:07:49.493Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Tenants.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
-              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
-              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Tenants.cshtml",
-              "ViewState": "AgIAAJoCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 16,
+              "Title": "Auth.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Auth.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Auth.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Auth.cshtml",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\Auth.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T15:30:42.882Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-18T10:55:09.233Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "_TenantLayout.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\Shared\\_TenantLayout.cshtml",
-              "RelativeDocumentMoniker": "WebApplication1\\Views\\Shared\\_TenantLayout.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\Shared\\_TenantLayout.cshtml",
-              "RelativeToolTip": "WebApplication1\\Views\\Shared\\_TenantLayout.cshtml",
-              "ViewState": "AgIAADMAAAAAAAAAAAAAADoAAAA3AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T15:42:46.573Z",
-              "EditorCaption": ""
+              "DocumentIndex": 17,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "WebApplication1\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "WebApplication1\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAGIAAAAAAAAAAAAmwKUAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-18T09:21:27.4Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 18,
               "Title": "_RentersLayout.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
               "RelativeDocumentMoniker": "WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
               "RelativeToolTip": "WebApplication1\\Views\\Shared\\_RentersLayout.cshtml",
-              "ViewState": "AgIAACkBAAAAAAAAAAAAACkBAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAAFAAAABSAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T15:43:14.918Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-15T09:03:09.978Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Units.cshtml",
-              "DocumentMoniker": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Units.cshtml",
-              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Units.cshtml",
-              "ToolTip": "C:\\Users\\Aldwin Florante\\Desktop\\folder3\\Bigtime-main - Copy\\WebApplication1\\Views\\System\\Admin\\Units.cshtml",
-              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Units.cshtml",
-              "ViewState": "AgIAALsAAAAAAAAAAAAmwMAAAABnAAAAAAAAAA==",
+              "DocumentIndex": 20,
+              "Title": "Maintenance.cshtml",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
+              "RelativeDocumentMoniker": "WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
+              "RelativeToolTip": "WebApplication1\\Views\\System\\Admin\\Maintenance.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcBAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-09-13T14:31:15.761Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-13T11:50:41.225Z"
             }
           ]
         }

@@ -171,20 +171,13 @@
                 </div>
             </div>
 
-            <!-- Color -->
-            <div>
-                <label class="block text-sm text-slate-700 font-medium mb-2">Fallback Color</label>
-                <div class="flex items-center gap-3">
-                    <input type="color" ng-model="colorCode" class="w-10 h-10 rounded-lg cursor-pointer border border-slate-200" />
-                    <span class="text-slate-500 text-sm font-mono uppercase">{{colorCode || '#1F6FEB'}}</span>
-                </div>
-            </div>
+      
         </div>
 
         <!-- Modal Footer -->
         <div class="flex gap-3 justify-end px-6 py-4 border-t border-slate-100">
             <button ng-click="closeEditorModal()" class="px-4 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all">Cancel</button>
-            <button ng-click="saveUnit(selectedUnit)" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all">Save Unit</button>
+            <button ng-click="saveUnit(selectedUnit)" class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-all">{{isLoading ? "Saving Unit.." : "Save Unit"}}</button>
         </div>
     </div>
 </div>
@@ -242,6 +235,7 @@
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Price</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Status</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Occupancy</th>
+                        <th class="px-5 py-3 text-xa text-slate-500 font-medium">Rental Type</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium text-right">Actions</th>
                     </tr>
                 </thead>
@@ -269,6 +263,9 @@
                             <div class="h-6 w-20 bg-slate-200 rounded-full"></div>
                         </td>
                         <td class="px-5 py-4">
+                            <div class="h-6 w-20 bg-slate-200 rounded-full"
+                        </td>
+                        <td class="px-5 py-4">
                             <div class="flex items-center justify-end gap-2">
                                 <div class="w-8 h-8 rounded-lg bg-slate-200"></div>
                                 <div class="w-8 h-8 rounded-lg bg-slate-200"></div>
@@ -293,6 +290,7 @@
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Price</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Status</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Occupancy</th>
+                        <th class="px-5 py-3 text-xs text-slate-500 font-medium">Rental Type</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium text-right">Actions</th>
                     </tr>
                 </thead>
@@ -300,8 +298,7 @@
                     <tr ng-repeat="unit in filteredUnits()" class="hover:bg-slate-50 transition-colors">
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-3">
-                                <img ng-if="unit.imageUrl" ng-src="{{ unit.imageUrl }}" class="w-10 h-8 rounded-lg object-cover" />
-                                <div ng-if="!unit.imageUrl" class="w-10 h-8 rounded-lg" ng-style="{ 'background-color': unit.colorCode }"></div>
+                                <div class="w-10 h-8 rounded-lg" ng-style="{ 'background-color': unit.status === 'active' ? '#22C55E' : '#EF4444' }"></div>
                                 <div>
                                     <p class="text-slate-900 text-sm font-medium">{{ unit.unitName }}</p>
                                     <p class="text-slate-400 text-[11px]">{{ unit.floor }}</p>
@@ -324,6 +321,16 @@
             'bg-amber-50 text-amber-700': unit.occupancy === 'Expiring'
           }">
                                 {{ unit.occupancy }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-medium"
+                                  ng-class="{
+                                  'bg-green-50 text-green-700' : unit.rentaltype === 'Solo',
+                                  'bg-blue-50 text-blue-700' : unit.rentaltype === 'Household',
+                                  'bg-amber-50 text-amber-700': unit.rentaltype === 'Bedspace'
+                                  }">
+                                    {{unit.rentaltype || "SOLO"}}
                             </span>
                         </td>
                         <!-- Actions -->

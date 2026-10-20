@@ -1,6 +1,14 @@
 ﻿@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
+<!-- Toast Notification -->
+<div ng-show="toastShow" style="animation: slideDown 0.5s ease-in-out"
+     class="fixed top-4 right-4 z-[300] flex items-center gap-3 bg-white border shadow-sm rounded-2xl px-5 py-4 w-[350px] max-w-full transition-all duration-300"
+     ng-class="{'border-green-200': toast.type === 'success', 'border-red-200': toast.type === 'error'}">
+    <span class="font-medium text-[14px]" ng-class="{'text-green-700': toast.type === 'success', 'text-red-700': toast.type === 'error'}">
+        {{ toast.message }}
+    </span>
+</div>
 
 <div class="p-6" ng-init="isLoading = true; getAllPayments(); currentPage = 'Payments'">
 
@@ -58,17 +66,17 @@
 
     <!-- Filters -->
     <div class="flex gap-2 mb-4 flex-wrap">
-        <button ng-click="setStatusFilter('All')"
+        <button ng-click="setPaymentStatusFilter('All')"
                 ng-class="paymentFilter === 'All' ? 'bg-green-600 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'"
                 class="px-4 py-2 rounded-xl text-sm font-medium transition-all">
             All
         </button>
-        <button ng-click="setStatusFilter('Paid')"
+        <button ng-click="setPaymentStatusFilter('Paid')"
                 ng-class="paymentFilter === 'Paid' ? 'bg-green-600 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'"
                 class="px-4 py-2 rounded-xl text-sm font-medium transition-all">
             Paid
         </button>
-        <button ng-click="setStatusFilter('Unpaid')"
+        <button ng-click="setPaymentStatusFilter('Unpaid')"
                 ng-class="paymentFilter === 'Unpaid' ? 'bg-green-600 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300'"
                 class="px-4 py-2 rounded-xl text-sm font-medium transition-all">
             Unpaid
@@ -159,13 +167,15 @@
                         </td>
 
                         <!-- Action -->
-                        <td class="px-5 py-3 whitespace-nowrap">
+                        <td class="px-5 py-3 whitespace-nowrap flex gap-4">
                             <button ng-if="p.status === 'Unpaid'"
                                     ng-click="openMarkPaidModal(p)"
                                     class="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><path d="m9 16 2 2 4-4" /></svg>
                                 Mark Paid
                             </button>
+
+
                         </td>
                     </tr>
                 </tbody>
@@ -233,7 +243,29 @@
                         <span class="block text-xs" ng-class="paidUntil === opt.key ? 'text-green-200' : 'text-slate-400'">{{ opt.year }}</span>
                     </button>
                 </div>
+
+
             </div>
+
+
+            <button type="button"
+                    ng-click="NotifModal = true"
+                    class="flex items-center justify-center gap-2 bg-amber-50 text-sm w-full py-3.5 text-amber-600 font-semibold rounded-xl transition-colors hover:bg-amber-100">
+                <!-- Your existing bell SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="w-3 h-3 flex-shrink-0">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                    <path d="M10 21h4" />
+                </svg>
+
+                Notify
+            </button>
 
             <!-- Preview -->
             <div ng-if="paidUntil" class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
@@ -262,8 +294,131 @@
             <button ng-click="confirmMarkPaid()" ng-disabled="!paidUntil"
                     class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-medium transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><path d="m9 16 2 2 4-4" /></svg>
-                Confirm & Mark Paid
+                {{isLoading ? 'Saving...' : 'Confirm & Mark Paid'}}
             </button>
         </div>
     </div>
 </div>
+
+
+<!-- Notification Modal -->
+<div ng-show="NotifModal"
+     ng-cloak
+     class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4">
+
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div>
+                <h2 class="text-slate-900 font-semibold text-base">Send Notification</h2>
+                <p class="text-slate-500 text-xs mt-1">
+                    Select a notification to send to the tenant.
+                </p>
+            </div>
+
+            <button type="button"
+                    ng-click="NotifModal = false"
+                    class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round"
+                     class="w-4 h-4">
+                    <path d="m18 6-12 12M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-4">
+
+            <!-- Tenant -->
+            <div class="flex items-center gap-3 p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                    {{ markPaidTarget.tenantName.charAt(0) }}
+                </div>
+
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold text-slate-900 truncate">
+                        {{ markPaidTarget.tenantName }}
+                    </p>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Unit {{ markPaidTarget.unitName }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Notification Options -->
+            <div>
+                <p class="text-sm font-medium text-slate-700 mb-2">
+                    Notification Type
+                </p>
+
+                <button type="button"
+                        ng-click="selectedNotificationType = 'FailedPDC'"
+                        ng-class="selectedNotificationType === 'FailedPDC'
+                            ? 'border-red-300 bg-red-50 ring-1 ring-red-200'
+                            : 'border-slate-200 bg-white hover:border-slate-300'"
+                        class="w-full flex items-center gap-3 p-4 border rounded-xl text-left transition-colors">
+
+                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             class="w-5 h-5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="m15 9-6 6M9 9l6 6" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-slate-800">
+                            Failed PDC Payment
+                        </p>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Notify the tenant about an unsuccessful post-dated check.
+                        </p>
+                    </div>
+
+                    <svg ng-if="selectedNotificationType === 'FailedPDC'"
+                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         class="w-5 h-5 text-red-600 flex-shrink-0">
+                        <path d="m5 12 4 4L19 6" />
+                    </svg>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-400 leading-relaxed">
+                The notification message will be generated automatically by the system.
+            </p>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex gap-3 px-6 py-4 border-t border-slate-100">
+            <button type="button"
+                    ng-click="NotifModal = false"
+                    class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">
+                Cancel
+            </button>
+
+            <button type="button"
+                    ng-click="sendPaymentNotification(markPaidTarget.Tid)"
+                    ng-disabled="isSending || !selectedNotificationType"
+                    class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round"
+                     class="w-4 h-4">
+                    <path d="m22 2-7 20-4-9-9-4Z" />
+                    <path d="M22 2 11 13" />
+                </svg>
+                {{isSending ? 'Sending' : 'Send Notification' }}
+            </button>
+        </div>
+
+    </div>
+</div>
+

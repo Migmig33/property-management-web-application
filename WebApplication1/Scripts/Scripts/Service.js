@@ -60,6 +60,15 @@
         return response;
     }
     //Save service
+    this.saveTenantProfileRequestService = function (data) {
+        var response = $http({
+            url: "/TenantPortal/SaveTenantProfileChangeRequest",
+            method: "post",
+            data: { data },
+            headers: {"Content-Type" : "application/json"}
+        })
+        return response;
+    }
     this.saveUnitService = function (data, images, amenityIds, id) {
         return $http({
             url: "/System/SaveUnit",
@@ -405,6 +414,52 @@
         });
     };
 
+    // failed pdc notif
+    this.sendPaymentNotifcationService = function (id) {
+        var response = $http({
+            url: "/System/SendPaymentNotification",
+            method: "post",
+            data: { Tid: id },
+            headers: { "Content-Type": "application/json" }
+        })
+        return response;
+    }
+        this.exportLogsService = function () {
+            return $http({
+                url: "/System/ExportAuditTrail",
+                method: "GET",
+                responseType: "blob"
+            }).then(function (response) {
+                var blob = new Blob([response.data], {
+                    type: "text/csv;charset=utf-8;"
+                });
 
+                var url = window.URL.createObjectURL(blob);
+                var link = document.createElement("a");
 
+                link.href = url;
+                link.download = "AuditTrail.csv";
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(function () {
+                    window.URL.revokeObjectURL(url);
+                }, 1000);
+            });
+        };
+    this.getTenantProfileRequestChangeService = function () {
+        return $http.get('/System/GetAllTenantProfileChangeRequest');
+
+    }
+    this.updateStatusTenantProfileRequestService = function (data) {
+        var response = $http({
+            url: "/System/UpdateStatusTenantProfileRequest",
+            method: "post",
+            data: data,
+            headers: { "Content-Type": "application/json" }
+        });
+        return response;
+    }
 });

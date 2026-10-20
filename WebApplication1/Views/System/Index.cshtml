@@ -146,9 +146,13 @@
                         </svg>
                     </div>
 
-                    <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span ng-if="unit.joinable == true" class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium  border text-amber-700 border-amber-100 bg-amber-50">
+                        Bedspace
+                    </span>
+                    <span ng-if="unit.joinable == false" class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium border border-emerald-100 bg-emerald-50 text-emerald-700">
                         Vacant
                     </span>
+
 
                     <span class="absolute top-3 right-3 w-3 h-3 rounded-full ring-2 ring-white"
                           ng-style="{ 'background-color': unit.colorCode || '#94A3B8' }"></span>

@@ -1,7 +1,9 @@
-﻿using Hangfire.States;
+﻿using Amazon;
+using Hangfire.States;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -30,7 +32,7 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-        [CheckSession(AllowedRoles = new[] { 1 })]
+        //[CheckSession(AllowedRoles = new[] { 1 })]
         public ActionResult AdminDashboard()
         {
             return View("SuperAdmin/Dashboard");
@@ -76,7 +78,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Units");
         }
-        [CheckSession(AllowedRoles = new[] { 2 })]
+        //[CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Tenants()
         {
             return View("Admin/Tenants");
@@ -105,6 +107,10 @@ namespace WebApplication1.Controllers
         [CheckSession(AllowedRoles = new[] { 3 })]
 
         public ActionResult TenantPortal()
+        {
+            return View();
+        }
+        public ActionResult TenantProfile()
         {
             return View();
         }
@@ -144,7 +150,7 @@ namespace WebApplication1.Controllers
                 var folderPath =
                     Server.MapPath("~/Uploads/Videos");
 
-                if(!Directory.Exists(folderPath))
+                if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
@@ -157,10 +163,11 @@ namespace WebApplication1.Controllers
                 {
                     success = true,
                     url = videoUrl,
-                
+
                 });
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return Json(new { success = false, message = ErrorHandling(ex) },
                            JsonRequestBehavior.AllowGet);
@@ -459,7 +466,7 @@ namespace WebApplication1.Controllers
                             }
                         }
                     }
-                  
+
                     transaction.Commit();
                     committed = true;
                     CacheHelper.Remove("all-tenants");
@@ -575,7 +582,6 @@ namespace WebApplication1.Controllers
                             floor = data.floor,
                             description = data.description,
                             videoUrl = data.videoUrl,
-                            colorCode = data.colorCode,
                             status = data.status,
                             address = data.address,
                             maxOccupants = data.maxOccupants
@@ -596,7 +602,6 @@ namespace WebApplication1.Controllers
                         existingUnit.floor = data.floor;
                         existingUnit.description = data.description;
                         existingUnit.videoUrl = data.videoUrl;
-                        existingUnit.colorCode = data.colorCode;
                         existingUnit.status = data.status;
                         existingUnit.address = data.address;
                         existingUnit.maxOccupants = data.maxOccupants;
@@ -662,7 +667,7 @@ namespace WebApplication1.Controllers
         }
 
 
-      
+
         [HttpPost]
         public JsonResult ConfirmBooking(int id)
         {
@@ -1013,7 +1018,7 @@ namespace WebApplication1.Controllers
                         t.leaseStart.Date <= currentDate &&
                         t.leaseEnd.Date >= currentDate &&
                         t.isTerminated == 0       // 2. Sinigurado na hindi terminated ang tenant
-                       
+
                     )
                     .Select(t => t.unitId)
                     .Distinct()
@@ -1339,7 +1344,6 @@ namespace WebApplication1.Controllers
                                     .ToList();
 
                                 var cover = coverImages.FirstOrDefault(i => i != null && i.Uid == u.Uid);
-
                                 return new
                                 {
                                     u.Uid,
@@ -1350,7 +1354,6 @@ namespace WebApplication1.Controllers
                                     u.floor,
                                     u.description,
                                     u.videoUrl,
-                                    u.colorCode,
                                     u.status,
                                     u.address,
                                     u.maxOccupants,
@@ -1370,7 +1373,7 @@ namespace WebApplication1.Controllers
                                 };
                             }).ToList();
 
-                            return new {success = true, data = result };
+                            return new { success = true, data = result };
                         }
                     }
 
@@ -1534,13 +1537,13 @@ namespace WebApplication1.Controllers
                                 };
                             }).ToList();
 
-                            return new{ success = true, data = data };
+                            return new { success = true, data = data };
 
                         }
                     }
                     );
                 return Json(payload, JsonRequestBehavior.AllowGet);
-              
+
             }
             catch (Exception ex)
             {
@@ -1794,20 +1797,7 @@ namespace WebApplication1.Controllers
                 return Json(new { success = false, message = ErrorHandling(ex) });
             }
         }
-        public string ErrorHandling(Exception ex)
-        {
-            var errorMessage = $@"
-            ===== ERROR DETAILS =====
-            Message        : {ex.Message}
-            Type           : {ex.GetType().FullName}
-            Source         : {ex.Source}
-            Stack Trace    : {ex.StackTrace}
-            Inner Exception: {(ex.InnerException != null ? ex.InnerException.Message : "None")}
-            Timestamp      : {DateTime.Now:yyyy-MM-dd HH:mm:ss}
-            =========================";
-
-            return errorMessage;
-        }
+      
 
         // ============================================================
 
@@ -1916,7 +1906,6 @@ namespace WebApplication1.Controllers
                                     description = u.description ?? "",
                                     address = u.address ?? "",
                                     videoUrl = u.videoUrl,
-                                    colorCode = u.colorCode,
                                     status = u.status,
                                     maxOccupants = u.maxOccupants,
 
@@ -1953,22 +1942,30 @@ namespace WebApplication1.Controllers
                                 .Select(a => a.name)
                                 .ToList();
 
+                            var rentTypeOptions = data
+                                .Select(u => u.joinable ? "Bedspace" : "Vacant")
+                                .Distinct()
+                                .OrderBy(x => x)
+                                .ToList();
+
+                            
                             return new
                             {
                                 success = true,
                                 data = data,
                                 bedOptions = bedOptions,
-                                amenityOptions = amenityOptions
+                                amenityOptions = amenityOptions,
+                                rentTypeOptions = rentTypeOptions,
                             };
                         }
                     }
                     );
                 return LargeJson(payload);
-               
+
             }
             catch (Exception ex)
             {
-                return LargeJson(new { success = false, message = ex.Message });
+                return LargeJson(new { success = false, message = ErrorHandling(ex) });
             }
         }
 
@@ -2050,6 +2047,7 @@ namespace WebApplication1.Controllers
                                      where ua.Uid == u.Uid
                                      select a.name)
                                     .ToList();
+                    var colorCode = connect.unit.Select(x => x.status == "active" ? "#22C55E" : "#EF4444");
 
                     var unit = new
                     {
@@ -2062,7 +2060,7 @@ namespace WebApplication1.Controllers
                         description = u.description ?? "",
                         address = u.address ?? "",
                         video = u.videoUrl,
-                        color = u.colorCode,
+                        colorCode,
                         maxOccupants = u.maxOccupants,
                         joinable = joinable,
                         slotsOpen = slotsOpen,
@@ -2102,7 +2100,6 @@ namespace WebApplication1.Controllers
                         price = x.price,
                         sqm = x.sqm,
                         floor = x.floor,
-                        color = x.colorCode,
                         image = relatedImages
                             .Where(i => i.Uid == x.Uid)
                             .Select(i => i.imageUrl)
@@ -2471,10 +2468,10 @@ namespace WebApplication1.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-     
 
 
-      
+
+
         [HttpGet]
         [CheckSession(AllowedRoles = new[] { 1 })]
         public JsonResult GetAuditLogs()
@@ -2517,5 +2514,253 @@ namespace WebApplication1.Controllers
                             JsonRequestBehavior.AllowGet);
             }
         }
+
+        // sms notif for failed pdc
+
+        public JsonResult SendPaymentNotification(int? Tid)
+        {
+            System.Diagnostics.Debug.WriteLine("Received Tid: " + Tid);
+            if (!Tid.HasValue) { return Json(new { success = false, message = "Invalid tenant ID." }, JsonRequestBehavior.AllowGet); }
+
+            var tenant = new tenant();
+            var payment = new payment();
+            using (var db = new DB_Context())
+            {
+                tenant = db.tenant.FirstOrDefault(t => t.Tid == Tid);
+                payment = db.payment.FirstOrDefault(p => p.Tid == Tid && p.paidDate == null);
+
+            }
+            try
+            {
+                // Compose the message
+                string message = $"Hello {tenant.name},\n\n" +
+                $"This is to inform you that your Post-Dated Check (PDC) payment of {payment.amount:C} due on {payment.dueDate} was unsuccessful.\n\n" +
+                "Please arrange an alternative payment method and settle your outstanding balance as soon as possible.\n\n" +
+                "Thank you.";
+                // Send the notification (assuming NotificationService.SendEmail exists)
+                var phone = SmsServices.NormalizePhone(tenant.phone);
+                string error = SmsServices.SendSms(phone, message);
+                if (error == null)
+                {
+                    return Json(new { success = true, message = "Notification sent successfully." });
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Philsms Error: ", error);
+                    return Json(new { success = false, message = "Failed to send notification." + error });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ErrorHandling(ex) });
+            }
+        }
+
+        public ActionResult ExportAuditTrail()
+        {
+            using (var connect = new DB_Context())
+            {
+                var logs = connect.audit_log.OrderByDescending(a => a.createdAt).ToList();
+
+                var csv = new System.Text.StringBuilder();
+
+                csv.AppendLine("Date & Time,Type,Severity,Message,Actor");
+
+                foreach (var log in logs)
+                {
+                    csv.AppendLine(string.Join(",", new[]
+                    {
+                        CsvEscape(log.createdAt.ToString("yyyy-MM-dd HH:mm:ss")),
+                        CsvEscape(log.type),
+                        CsvEscape(log.severity),
+                        CsvEscape(log.message),
+                        CsvEscape(log.actor)
+                    }));
+                }
+                return File(
+                        new System.Text.UTF8Encoding(true).GetBytes(csv.ToString()),
+                        "text/csv",
+                        "AuditTrail_" + DateTime.Now.ToString("yyyy-MM-dd") + ".csv"
+                    );
+            }
+        }
+        public JsonResult UpdateStatusTenantProfileRequest(tenant_profile_change_request data)
+        {
+            try
+            {
+                if (data == null)
+                {
+                    return Json(new { success = false, message = "Invalid request data." });
+                }
+
+                if (string.IsNullOrWhiteSpace(data.status))
+                {
+                    return Json(new { success = false, message = "The request status cannot be empty." });
+                }
+
+                var status = data.status.Trim().ToLowerInvariant();
+
+                if (status != "accepted" && status != "declined")
+                {
+                    return Json(new { success = false, message = "Invalid request status." });
+                }
+
+                using (var connect = new DB_Context())
+                {
+                    var existingTenantRequest = connect.tenant_profile_change_request
+                        .FirstOrDefault(r => r.id == data.id);
+
+                    if (existingTenantRequest == null)
+                    {
+                        return Json(new { success = false, message = "There is no matching request ID." });
+                    }
+
+                    var thatTenant = connect.tenant
+                        .FirstOrDefault(r => r.Tid == existingTenantRequest.Tid);
+
+                    if (thatTenant == null)
+                    {
+                        return Json(new { success = false, message = "The associated tenant was not found." });
+                    }
+
+                    // Update the request review details.
+                    existingTenantRequest.status = status;
+                    existingTenantRequest.reviewNotes = data.reviewNotes;
+                    existingTenantRequest.reviewedAt = DateTime.Now;
+
+                    string message;
+
+                    if (status == "accepted")
+                    {
+                        // Apply the requested changes to the tenant profile.
+                        thatTenant.email = existingTenantRequest.requestedEmail;
+                        thatTenant.phone = existingTenantRequest.requestedPhone;
+                        thatTenant.occupation = existingTenantRequest.requestedOccupation;
+                        thatTenant.address = existingTenantRequest.requestedAddress;
+
+                        message = $"Hello {thatTenant.name},\n\n" +
+                            "Your request to change your profile information has been approved by the manager, " +
+                            "and the changes have been reflected in your tenant portal.\n\n" +
+                            "Your approved profile information:\n" +
+                            $"Email: {thatTenant.email}\n" +
+                            $"Phone: {thatTenant.phone}\n" +
+                            $"Occupation: {thatTenant.occupation}\n" +
+                            $"Address: {thatTenant.address}\n\n" +
+                            "Please log in to your tenant portal to review your updated information. " +
+                            "If you notice any discrepancies, please contact the property manager.";
+
+                    }
+                    else
+                    {
+                        // Do not modify the tenant profile when the request is declined.
+                        message = $"Hello {thatTenant.name},\n\n" +
+                            "Your request to change your profile information has been reviewed and declined by the manager.\n\n" +
+                            "Your requested changes were not applied, and your existing profile information remains unchanged.\n\n" +
+                            "Requested changes:\n" +
+                            $"Email: {existingTenantRequest.requestedEmail}\n" +
+                            $"Phone: {existingTenantRequest.requestedPhone}\n" +
+                            $"Occupation: {existingTenantRequest.requestedOccupation}\n" +
+                            $"Address: {existingTenantRequest.requestedAddress}\n\n" +
+                            $"Review Notes: {existingTenantRequest.reviewNotes ?? "No reason provided."}\n\n" +
+                            "Please review the manager's notes and contact the property manager if you need clarification.";
+                    }
+
+                    // Persist the review before attempting SMS delivery.
+                    connect.SaveChanges();
+
+                    // Send notification and record whether delivery was successful.
+                    bool notificationFailed = false;
+
+                    try
+                    {
+                        var phone = SmsServices.NormalizePhone(thatTenant.phone);
+                        var error = SmsServices.SendSms(phone, message);
+
+                        notificationFailed = error != null;
+                    }
+                    catch
+                    {
+                        // The request was saved even if the SMS service throws an exception.
+                        notificationFailed = true;
+                    }
+
+                    string action = status == "accepted" ? "accepted" : "declined";
+
+                    AuditLogger.Log(
+                        "user",
+                        "info",
+                        "Profile request by " + thatTenant.name + " was " + action,
+                        CurrentUserName()
+                    );
+
+                    string responseMessage = notificationFailed
+                        ? $"Tenant profile request successfully {action}, but the tenant could not be notified by SMS."
+                        : $"Tenant profile request successfully {action}, and the SMS notification was sent.";
+
+                    return Json(new
+                    {
+                        success = true,
+                        notificationFailed,
+                        message = responseMessage
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                });
+            }
+        }
+        public JsonResult GetAllTenantProfileChangeRequest()
+        {
+            try
+            {
+                using (var connect = new DB_Context())
+                {
+                    var request = connect.tenant_profile_change_request.ToList();
+                    var profile_requests = request.Select(x => new
+                    {
+                        x.id,
+                        x.Tid,
+                        x.requestedEmail,
+                        x.requestedPhone,
+                        x.requestedOccupation,
+                        x.requestedAddress,
+                        x.reason,
+                        x.status,
+                        reviewedAt = x.reviewedAt.HasValue ? x.reviewedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : null,
+                        requestedAt = x.requestedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                        x.reviewNotes
+                    }).ToList();
+                    return Json(new { success = true, profile_requests = profile_requests }, JsonRequestBehavior.AllowGet);
+                }
+            }catch(Exception ex)
+            {
+                return Json(new { success = false, message = ErrorHandling(ex) }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        private string CsvEscape(string value)
+        {
+            value = value ?? "";
+            return "\"" + value.Replace("\"", "\"\"") + "\"";
+        }
+        public string ErrorHandling(Exception ex)
+        {
+            var errorMessage = $@"
+            ===== ERROR DETAILS =====
+            Message        : {ex.Message}
+            Type           : {ex.GetType().FullName}
+            Source         : {ex.Source}
+            Stack Trace    : {ex.StackTrace}
+            Inner Exception: {(ex.InnerException != null ? ex.InnerException.Message : "None")}
+            Timestamp      : {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+            =========================";
+
+            return errorMessage;
+        }
     }
+    
 }

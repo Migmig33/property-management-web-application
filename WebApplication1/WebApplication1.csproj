@@ -266,6 +266,7 @@
     <Compile Include="Models\Maps\payment_maps.cs" />
     <Compile Include="Models\Maps\tenant_document_maps.cs" />
     <Compile Include="Models\Maps\tenant_maps.cs" />
+    <Compile Include="Models\Maps\tenant_profile_change_request_maps.cs" />
     <Compile Include="Models\Maps\unit_maps.cs" />
     <Compile Include="Models\Maps\unit_amenity_maps.cs" />
     <Compile Include="Models\Maps\unit_image_maps.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Models\Tables\sms_log.cs" />
     <Compile Include="Models\Tables\tenant.cs" />
     <Compile Include="Models\Tables\tenant_document.cs" />
+    <Compile Include="Models\Tables\tenant_profile_change_request.cs" />
     <Compile Include="Models\Tables\unit.cs" />
     <Compile Include="Models\Tables\unit_amenity.cs" />
     <Compile Include="Models\Tables\unit_image.cs" />
@@ -387,6 +389,7 @@
     <Content Include="LinqToDB.Templates\DataAnnotations.ttinclude" />
     <Content Include="LinqToDB.Templates\!ReadMe.LinqToDB.md" />
     <Content Include="LinqToDB.Templates\LinqToDB.MySql.Tools.ttinclude" />
+    <Content Include="Appsettings.Local.config" />
     <None Include="Properties\PublishProfiles\site88161-WebDeploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
@@ -1188,6 +1191,7 @@
     <Content Include="Views\System\SuperAdmin\Managers.cshtml" />
     <Content Include="Views\System\SuperAdmin\Table.cshtml" />
     <Content Include="Views\System\SuperAdmin\Log.cshtml" />
+    <Content Include="Views\System\TenantProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
