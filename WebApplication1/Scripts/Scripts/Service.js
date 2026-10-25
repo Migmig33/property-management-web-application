@@ -245,6 +245,9 @@
     this.GetAuditLogsService = function () {
         return $http.get('/System/GetAuditLogs');
     }
+    this.GetArchivedAuditLogsService = function () {
+        return $http.get('/System/GetArchivedAuditLog')
+    }
     this.GetUnitImagesService = function (uid) {
         return $http({
             method: 'GET',

@@ -13,5 +13,6 @@ namespace WebApplication1.Models.Tables
         public string message { get; set; }
         public string actor { get; set; }
         public DateTime createdAt { get; set; }
+        public int is_archived { get; set; }
     }
 }

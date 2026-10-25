@@ -80,6 +80,11 @@
                         ng-class="filter === f.id ? 'bg-green-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'">
                     {{ f.label }}
                 </button>
+                <button class="px-3 py-2 rounded-xl text-xs font-medium transition-all capitalize focus:outline-none bg-green-600 text-white shadow-sm"
+                        ng-click="toggleArchived()">
+                    {{ isArchived ? 'View Active' : 'View Archive' }}
+                </button>
+
             </div>
         </div>
 

@@ -288,6 +288,7 @@
     <Compile Include="Models\Tables\unit_image.cs" />
     <Compile Include="Models\Tables\verifycode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AuditArchiveService.cs" />
     <Compile Include="Services\BillingScheduler.cs" />
     <Compile Include="Services\EmailServices.cs" />
     <Compile Include="Services\NotificationChecker.cs" />

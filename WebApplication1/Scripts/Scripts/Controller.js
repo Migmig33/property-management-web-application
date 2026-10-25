@@ -3339,7 +3339,18 @@
         { id: 'security', label: 'Security' },
         { id: 'user', label: 'User' }
     ];
+    $scope.isArchived = null;
+    $scope.toggleArchived = function () {
+        $scope.isArchived = !$scope.isArchived;
+        if ($scope.isArchived == true) {
+            $scope.initAuditArchived();
 
+        } else {
+            $scope.initAudit();
+
+        }
+
+    }
     $scope.initAudit = function () {
         $scope.isLoading = true;
         service.GetAuditLogsService().then(function (res) {
@@ -3355,7 +3366,21 @@
             $scope.isLoading = false;
         });
     };
-
+    $scope.initAuditArchived = function () {
+        $scope.isLoading = true;
+        service.GetArchivedAuditLogsService().then(function (res) {
+            if (res.data && res.data.success) {
+                $scope.auditLogs = res.data.data || [];
+                $scope.counts = res.data.counts || {};
+            } else {
+                $scope.showToast(res.data.message || 'Unable to load the archived audit trail.', 'error')
+            }
+        }).catch(function () {
+            $scope.showToast('Unable to load the archived trail', 'erro');
+        }).finally(function () {
+            $scope.isLoading = false;
+        })
+    }
     $scope.setAuditFilter = function (type) {
         $scope.filter = ($scope.filter === type && type !== 'all') ? 'all' : type;
     };

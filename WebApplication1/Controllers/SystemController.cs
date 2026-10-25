@@ -1,9 +1,11 @@
 ﻿using Amazon;
 using Hangfire.States;
 using Microsoft.Ajax.Utilities;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -32,7 +34,7 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-        //[CheckSession(AllowedRoles = new[] { 1 })]
+        [CheckSession(AllowedRoles = new[] { 1 })]
         public ActionResult AdminDashboard()
         {
             return View("SuperAdmin/Dashboard");
@@ -78,7 +80,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Units");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Tenants()
         {
             return View("Admin/Tenants");
@@ -2471,17 +2473,20 @@ namespace WebApplication1.Controllers
 
 
 
-
+        
         [HttpGet]
         [CheckSession(AllowedRoles = new[] { 1 })]
         public JsonResult GetAuditLogs()
         {
             try
             {
+                AuditArchiveService.Run(false);
+
                 using (var connect = new DB_Context())
                 {
                     // Newest first; cap so the page stays fast
                     var logs = connect.audit_log
+                        .Where(x => x.is_archived == 0)
                         .OrderByDescending(x => x.createdAt)
                         .Take(500)
                         .ToList()  // to memory so we can format dates below
@@ -2491,7 +2496,6 @@ namespace WebApplication1.Controllers
                             type = x.type,
                             message = x.message,
                             actor = x.actor,
-                            ip = (string)null,   // not stored; view hides it when empty
                             date = x.createdAt.ToString("MMM d, yyyy"),
                             time = x.createdAt.ToString("h:mm tt")
                         })
@@ -2499,6 +2503,7 @@ namespace WebApplication1.Controllers
 
                     // Per-type totals for the 5 stat cards (whole table, not just the 500)
                     var counts = connect.audit_log
+                        .Where(x => x.is_archived == 0)
                         .GroupBy(x => x.type)
                         .Select(g => new { type = g.Key, count = g.Count() })
                         .ToList()
@@ -2512,6 +2517,47 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { success = false, message = ex.Message },
                             JsonRequestBehavior.AllowGet);
+            }
+        }
+        [CheckSession(AllowedRoles = new[] { 1 })]
+
+        public JsonResult GetArchivedAuditLog()
+        {
+            try
+            {
+                using(var connect = new DB_Context())
+                {
+                    var archived_logs = connect.audit_log
+                    .Where(x => x.is_archived == 1)
+                    .OrderByDescending(x => x.createdAt)
+                    .Take(500)
+                    .ToList()
+                    .Select(x => new
+                    {
+                        id = x.logId,
+                        type = x.type,
+                        message = x.message,
+                        actor = x.actor,
+                        date = x.createdAt.ToString("MMM d, yyyy"),
+                        time = x.createdAt.ToString("h:mm tt")
+                    })
+                    .ToList();
+
+                    var counts = connect.audit_log
+                        .Where(x => x.is_archived == 1)
+                        .GroupBy(x => x.type)
+                        .Select(g => new { type = g.Key, count = g.Count() })
+                        .ToList()
+                        .ToDictionary(g => g.type, g => g.count);
+
+                    return Json(new { success = true, data = archived_logs, counts = counts },
+                                JsonRequestBehavior.AllowGet);
+
+
+                }
+            }catch(Exception ex)
+            {
+                return Json(new { success = false, message = ErrorHandling(ex) });
             }
         }
 
