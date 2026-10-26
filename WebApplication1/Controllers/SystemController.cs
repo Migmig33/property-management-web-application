@@ -75,7 +75,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Dashboard");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Units()
         {
             return View("Admin/Units");

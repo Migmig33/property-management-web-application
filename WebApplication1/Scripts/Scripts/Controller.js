@@ -2479,9 +2479,30 @@
     $scope.bkSendOtp = function () {
         $scope.bkErrors = {};
 
-        if (!$scope.bkName) $scope.bkErrors.name = "Full name is required";
-        if (!$scope.bkEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($scope.bkEmail)) $scope.bkErrors.email = "Valid email is required";
-        if (!$scope.bkPhone) $scope.bkErrors.phone = "Phone number is required";
+        $scope.bkErrors = $scope.bkErrors || {};
+
+        var name = ($scope.bkName || "").trim();
+        var email = ($scope.bkEmail || "").trim();
+        var phone = String($scope.bkPhone || "").trim();
+
+        // Full name: letters and spaces only
+        if (!name) {
+            $scope.bkErrors.name = "Full name is required";
+        } else if (!/^[A-Za-z ]+$/.test(name)) {
+            $scope.bkErrors.name = "Name must contain letters and spaces only";
+        }
+
+        // Email: valid email format
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            $scope.bkErrors.email = "Valid email is required";
+        }
+
+        // Phone: digits only
+        if (!phone) {
+            $scope.bkErrors.phone = "Phone number is required";
+        } else if (!/^\d+$/.test(phone)) {
+            $scope.bkErrors.phone = "Phone number must contain digits only";
+        }
 
         if (Object.keys($scope.bkErrors).length > 0) return;
 
@@ -3193,14 +3214,37 @@
         $scope.formErrors = e;
         return Object.keys(e).length === 0;
     };
-
     $scope.handleSave = function ($event) {
         if ($event) $event.preventDefault();
+
+        $scope.formErrors = $scope.formErrors || {};
+
+        var fullName = (($scope.form && $scope.form.name) || "").trim();
+
+        if (!fullName) {
+            $scope.formErrors.name = "Full name is required";
+            return;
+        }
+
+        if (!/^[A-Za-z ]+$/.test(fullName)) {
+            $scope.formErrors.name = "Full name must contain letters and spaces only";
+            return;
+        }
+
+        delete $scope.formErrors.name;
+
         if (!$scope.validateForm()) return;
 
         $scope.saving = true;
+
         var f = $scope.form;
-        var payload = { id: f.id, name: f.name.trim(), email: f.email.trim(), role: Number(f.role), password: f.password || '' };
+        var payload = {
+            id: f.id,
+            name: fullName,
+            email: f.email.trim(),
+            role: Number(f.role),
+            password: f.password || ''
+        };
 
         var call = $scope.modalMode === 'create'
             ? service.CreateManagerService(payload)
@@ -3210,18 +3254,29 @@
             if (res.data && res.data.success) {
                 $scope.closeManagerModal();
                 $scope.initManagers();
-                $scope.showToast($scope.modalMode === 'create' ? 'Manager account created.' : 'Account updated.', 'success');
+
+                $scope.showToast(
+                    $scope.modalMode === 'create'
+                        ? 'Manager account created.'
+                        : 'Account updated.',
+                    'success'
+                );
             } else {
-                var message = (res.data && res.data.message) || 'Unable to save the account.';
+                var message = (res.data && res.data.message)
+                    || 'Unable to save the account.';
+
                 $scope.formErrors.general = message;
                 $scope.showToast(message, 'error');
             }
         }, function () {
-            $scope.formErrors.general = 'Unable to save the account. Please try again.';
-            $scope.showToast($scope.formErrors.general, 'error');
-        }).finally(function () { $scope.saving = false; });
-    };
+            $scope.formErrors.general =
+                'Unable to save the account. Please try again.';
 
+            $scope.showToast($scope.formErrors.general, 'error');
+        }).finally(function () {
+            $scope.saving = false;
+        });
+    };
     $scope.confirmDelete = function (m) { $scope.deleteTarget = m; $scope.deleteOpen = true; };
 
     $scope.handleDeleteBackdropClick = function ($event) {

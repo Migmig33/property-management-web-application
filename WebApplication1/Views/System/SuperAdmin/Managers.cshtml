@@ -284,7 +284,12 @@
                     <label class="block text-xs font-medium text-slate-600 mb-1.5">Full Name</label>
                     <div class="relative">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                        <input id="firstInput" type="text" ng-model="form.name" placeholder="e.g. Maria Santos" class="{{ getInputClass(formErrors.name) }}" />
+                        <input type="text"
+                               ng-model="form.name"
+                               placeholder="e.g. Maria Santos"
+                               ng-keyup="allowManagerNameOnly($event)"
+                               ng-change="sanitizeManagerName()"
+                               class="{{ getInputClass(formErrors.name) }}" />
                     </div>
                     <p class="text-xs text-red-500 mt-1" ng-show="formErrors.name">{{ formErrors.name }}</p>
                 </div>
