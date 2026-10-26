@@ -75,7 +75,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Dashboard");
         }
-        [CheckSession(AllowedRoles = new[] { 2 })]
+        //[CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Units()
         {
             return View("Admin/Units");
@@ -1294,9 +1294,9 @@ namespace WebApplication1.Controllers
 
                             var units = connect.unit.ToList();
                             var tenants = connect.tenant.ToList();
-                            var amenities = connect.amenity.ToList();
+                           
                             var unitAmenities = connect.unit_amenity.ToList();
-
+                            
                             // Cover image only. Pulling every image for every unit is what
                             // blew past the serializer limit — the grid shows one thumbnail,
                             // and the editor fetches the full set via GetUnitImages.
@@ -1318,6 +1318,12 @@ namespace WebApplication1.Controllers
                                 var tenant = tenants.FirstOrDefault(t =>
                                     t.unitId == u.Uid
                                 );
+                                var rentalType = tenant == null ? null
+                               : tenant.occupancyTypeId == 1 ? "Solo"
+                               : tenant.occupancyTypeId == 2 ? "Household"
+                               : tenant.occupancyTypeId == 3 ? "Bedspace"
+                               : null;
+                                var amenities = connect.amenity.ToList();
 
                                 string occupancy;
                                 if (tenant == null)
@@ -1360,7 +1366,7 @@ namespace WebApplication1.Controllers
                                     u.address,
                                     u.maxOccupants,
                                     occupancy,
-
+                                    rentalType,
                                     // Same shape as before: [{ imageUrl: "..." }], just capped at one
                                     images = cover == null
                                         ? new List<object>()

@@ -235,7 +235,7 @@
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Price</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Status</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium">Occupancy</th>
-                        <th class="px-5 py-3 text-xa text-slate-500 font-medium">Rental Type</th>
+                        <th class="px-5 py-3 text-xs text-slate-500 font-medium">Rental Type</th>
                         <th class="px-5 py-3 text-xs text-slate-500 font-medium text-right">Actions</th>
                     </tr>
                 </thead>
@@ -326,11 +326,11 @@
                         <td class="px-5 py-3">
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-medium"
                                   ng-class="{
-                                  'bg-green-50 text-green-700' : unit.rentaltype === 'Solo',
-                                  'bg-blue-50 text-blue-700' : unit.rentaltype === 'Household',
-                                  'bg-amber-50 text-amber-700': unit.rentaltype === 'Bedspace'
+                                  'bg-green-50 text-green-700' : unit.rentalType === 'Solo',
+                                  'bg-blue-50 text-blue-700' : unit.rentalType === 'Household',
+                                  'bg-amber-50 text-amber-700': unit.rentalType === 'Bedspace'
                                   }">
-                                    {{unit.rentaltype || "SOLO"}}
+                                    {{unit.rentalType || "SOLO"}}
                             </span>
                         </td>
                         <!-- Actions -->

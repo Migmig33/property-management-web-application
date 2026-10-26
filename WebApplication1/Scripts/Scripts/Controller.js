@@ -2017,10 +2017,12 @@
     }
     $scope.handleSubmitRequest = function () {
         if (!$scope.requestForm.reqDescription) {
+            alert(1)
             $scope.showToast("Please describe the issue.", "error");
             return;
         }
         if (!$scope.currentTenant) {
+            alert(2)
             $scope.showToast("System error: Tenant data not loaded.", "error");
             return;
         } 
@@ -3508,10 +3510,10 @@
 
         if (!$scope.currentTenant.address) {
 
-            return $scope.showToast("Address cannot be empty", "error");
+            return $scope.showToast("Address cannot be exmpty", "error");
         }
 
-        if (!reason || !reason.trim()) {
+        if (!$scope.reason || !$scope.reason.trim()) {
 
             return $scope.showToast("Please enter a reason for the profile change", "error");
         }
@@ -3522,8 +3524,8 @@
             requestedPhone: $scope.currentTenant.phone,
             requestedOccupation: $scope.currentTenant.occupation,
             requestedAddress: $scope.currentTenant.address,
-            reason: reason.trim(),
-            status: $scope.status || "pending",
+            reason: $scope.reason.trim(),
+            status: "pending",
             reviewNotes: $scope.reviewNotes || null
         };
 

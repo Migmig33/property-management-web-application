@@ -11,11 +11,11 @@
     </span>
 </div>
 
-<div class="min-h-screen bg-slate-100 flex font-sans text-slate-900"
+<div class="min-h-screen bg-slate-50 flex flex-col lg:flex-row font-sans text-slate-900"
      ng-init="isLoading = true; init()">
 
     <!-- LEFT SIDEBAR -->
-    <aside class="w-72 sm:w-80 bg-gradient-to-b from-green-700 to-green-900 text-white p-8 flex flex-col flex-shrink-0 fixed h-screen overflow-y-auto z-10 shadow-xl border-r border-green-800">
+    <aside class="w-full lg:w-72 bg-gradient-to-b from-green-800 to-green-950 text-white p-5 sm:p-7 flex flex-col flex-shrink-0 lg:fixed lg:inset-y-0 lg:left-0 lg:h-screen overflow-y-auto z-10 shadow-xl border-r border-green-900">
 
         <button type="button"
                 ng-click="handleLogout()"
@@ -56,15 +56,11 @@
         <div ng-if="!isLoading"
              class="flex flex-col items-start px-2 mb-6">
 
-            <div class="relative mb-6">
-                <div class="w-32 h-32 rounded-full bg-white flex items-center justify-center shadow-lg shadow-green-900/50 border-4 border-green-500/30">
-                    <span class="text-5xl font-bold text-green-700">
+            <div class="mb-5">
+                <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-md ring-4 ring-green-500/25">
+                    <span class="text-4xl font-bold text-green-800">
                         {{ currentTenant.name ? currentTenant.name[0] : '?' }}
                     </span>
-                </div>
-
-                <div class="absolute bottom-1 right-1 w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white border-4 border-green-800 shadow-md">
-                    <lucide-icon name="building-2" size="16"></lucide-icon>
                 </div>
             </div>
 
@@ -72,17 +68,11 @@
                 {{ currentTenant.name }}
             </h1>
 
-            <div class="inline-flex items-center gap-1.5 bg-green-900/40 px-3 py-1 rounded-full">
-                <lucide-icon name="door-closed" size="12" class="text-green-300"></lucide-icon>
-                <span class="text-green-100 text-xs font-semibold">
-                    Unit {{ currentTenant.unit }}
-                </span>
-            </div>
         </div>
 
         <!-- PERSONAL DETAILS -->
         <div ng-if="!isLoading"
-             class="flex flex-col px-2 w-full mt-2 border-t border-green-600/50 pt-6">
+             class="flex flex-col px-2 w-full mt-2 border-t border-green-600/50 pt-5">
 
             <div class="flex items-center justify-between mb-5">
                 <p class="text-xs font-semibold text-green-400/80 uppercase tracking-wider">
@@ -100,7 +90,7 @@
 
             <!-- VIEW MODE -->
             <div ng-if="!isEditingProfile"
-                 class="flex flex-col space-y-6">
+                 class="flex flex-col space-y-4">
 
                 <div class="flex flex-col gap-1.5">
                     <span class="text-[10px] font-bold text-green-300 uppercase tracking-widest">
@@ -227,10 +217,10 @@
     </aside>
 
     <!-- RIGHT CONTENT AREA -->
-    <main class="flex-1 ml-72 sm:ml-80 p-8 sm:p-12 flex flex-col min-h-screen">
+    <main class="flex-1 min-w-0 ml-0 lg:ml-72 p-5 sm:p-8 xl:p-10 flex flex-col min-h-screen">
 
         <!-- HEADER -->
-        <div class="flex justify-end items-center mb-8 bg-white px-6 py-4 rounded-2xl shadow-sm border border-slate-200 w-full">
+        <div class="flex justify-end items-center mb-6 sm:mb-8 bg-white px-5 sm:px-6 py-4 rounded-2xl shadow-sm border border-slate-200 w-full">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center shadow-sm">
                     <lucide-icon name="building-2" size="16" class="text-white"></lucide-icon>
@@ -257,17 +247,11 @@
         <div ng-if="!isLoading" class="w-full space-y-10 pb-20">
 
             <!-- WELCOME CARD -->
-            <div class="w-full bg-gradient-to-r from-green-600 to-green-700 rounded-3xl p-8 sm:p-10 text-white shadow-xl flex items-center justify-between flex-wrap gap-6 fade-in-up">
+            <div class="w-full bg-gradient-to-br from-green-700 via-green-700 to-emerald-800 rounded-3xl p-6 sm:p-8 xl:p-10 text-white shadow-lg flex items-center justify-between flex-wrap gap-6 fade-in-up">
                 <div>
-                    <p class="text-green-200 text-sm mb-1">
-                        Welcome back, Tenant
-                        <span class="text-white">
-                            {{ currentTenant.id | uppercase }}
-                        </span>
-                    </p>
-                    <h2 class="text-white mb-4 text-3xl font-bold">
-                        {{ currentTenant.name }}
-                    </h2>
+                    <p class="text-green-200 text-xs font-semibold uppercase tracking-widest mb-2">Tenant dashboard</p>
+                    <h2 class="text-white mb-3 text-2xl sm:text-3xl font-bold">Your rental overview</h2>
+                    <p class="text-green-100/90 text-sm mb-4">Lease status and payment information at a glance.</p>
                     <div class="flex flex-wrap items-center gap-3 text-sm">
                         <span class="flex items-center gap-1.5 bg-white/15 px-3 py-1 rounded-full">
                             <lucide-icon name="building-2" size="13"></lucide-icon>
@@ -299,55 +283,22 @@
             </div>
 
             <!-- LEASE DETAILS AND PAYMENTS -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-10 w-full">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-8 w-full">
 
                 <section id="lease-details" class="fade-in-up delay-1">
                     <p class="text-slate-500 font-bold uppercase tracking-wider text-xs mb-4 ml-2">
                         Lease Details
                     </p>
-                    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm h-full w-full">
-                        <div class="grid grid-cols-2 gap-6">
-
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-                                <p class="text-slate-400 text-xs mb-0.5">Unit</p>
-                                <p class="text-slate-900 text-sm font-bold">
-                                    {{ currentTenant.unit || '—' }}
-                                </p>
+                    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm h-full w-full">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                                <p class="text-slate-400 text-xs mb-1">Lease Start</p>
+                                <p class="text-slate-900 text-sm font-bold">{{ currentTenant.leaseStart || '—' }}</p>
                             </div>
 
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-                                <p class="text-slate-400 text-xs mb-0.5">Days Remaining</p>
-                                <p class="text-slate-900 text-sm font-bold">
-                                    {{ daysLeft !== null ? (daysLeft < 0 ? 'Expired' : daysLeft + ' days') : '—' }}
-                                </p>
-                            </div>
-
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-                                <p class="text-slate-400 text-xs mb-0.5">Lease Start</p>
-                                <p class="text-slate-900 text-sm font-bold">
-                                    {{ currentTenant.leaseStart || '—' }}
-                                </p>
-                            </div>
-
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-                                <p class="text-slate-400 text-xs mb-0.5">Lease End</p>
-                                <p class="text-slate-900 text-sm font-bold">
-                                    {{ currentTenant.leaseEnd || '—' }}
-                                </p>
-                            </div>
-
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 col-span-2">
-                                <p class="text-slate-400 text-xs mb-0.5">Phone</p>
-                                <p class="text-slate-900 text-sm font-medium">
-                                    {{ currentTenant.phone || '—' }}
-                                </p>
-                            </div>
-
-                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 col-span-2">
-                                <p class="text-slate-400 text-xs mb-0.5">Address</p>
-                                <p class="text-slate-900 text-sm font-medium">
-                                    {{ currentTenant.address || '—' }}
-                                </p>
+                            <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                                <p class="text-slate-400 text-xs mb-1">Lease End</p>
+                                <p class="text-slate-900 text-sm font-bold">{{ currentTenant.leaseEnd || '—' }}</p>
                             </div>
                         </div>
                     </div>
@@ -358,7 +309,7 @@
                     <p class="text-slate-500 font-bold uppercase tracking-wider text-xs mb-4 ml-2">
                         Payment History
                     </p>
-                    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm h-full flex flex-col w-full">
+                    <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm h-full flex flex-col w-full">
 
                         <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
                             <h3 class="text-lg font-bold text-slate-900">Records</h3>
@@ -424,9 +375,10 @@
             <section id="maintenance" class="fade-in-up delay-3 w-full">
 
                 <div class="flex items-center justify-between mb-4 px-2">
-                    <p class="text-slate-500 font-bold uppercase tracking-wider text-xs">
-                        Maintenance Requests
-                    </p>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Maintenance</h2>
+                        <p class="text-sm text-slate-500 mt-0.5">Report an issue and track its progress.</p>
+                    </div>
 
                     <button type="button"
                             ng-click="toggleRequestForm()"
@@ -437,22 +389,34 @@
                     </button>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm w-full">
+                <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm w-full">
 
-                    <div ng-if="showRequestForm"
-                         class="bg-green-50 border border-green-100 rounded-2xl p-6 mb-8">
-                        <p class="text-sm text-green-800 font-bold mb-5">
-                            Submit a New Request
-                        </p>
+                    <form ng-show="showRequestForm"
+                          name="maintenanceRequestForm"
+                          ng-submit="handleSubmitRequest($event)"
+                          novalidate
+                          class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 mb-7">
+                        <div class="flex items-start gap-3 mb-5">
+                            <div class="w-10 h-10 shrink-0 rounded-xl bg-green-100 text-green-700 flex items-center justify-center">
+                                <lucide-icon name="wrench" size="18"></lucide-icon>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">What needs fixing?</h3>
+                                <p class="text-sm text-slate-500 mt-0.5">Give us a category and a short description. You can submit up to 100 characters.</p>
+                            </div>
+                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div class="md:col-span-1">
-                                <label class="block text-xs font-bold text-slate-600 mb-2">
-                                    Category *
+                                <label for="reqCategory" class="block text-xs font-bold text-slate-700 mb-2">
+                                    Category <span class="text-red-500">*</span>
                                 </label>
-                                <select name="reqCategory"
-                                        ng-model="requestForm.reqCategory"
-                                        class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <select id="reqCategory"
+                                        name="reqCategory"
+                                        ng-model="reqCategory"
+                                        required
+                                        class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                    <option value="">Choose a category</option>
                                     <option ng-repeat="c in MAINTENANCE_CATEGORIES"
                                             value="{{ c }}">
                                         {{ c }}
@@ -461,46 +425,44 @@
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-bold text-slate-600 mb-2">
-                                    Description *
-                                    <span class="text-slate-400 font-normal">
-                                        (describe the issue clearly)
-                                    </span>
-                                </label>
-                                <div class="relative">
-                                    <textarea name="reqDescription"
-                                              ng-model="requestForm.reqDescription"
-                                              ng-maxlength="100"
-                                              rows="2"
-                                              placeholder="e.g. The bathroom faucet has been leaking..."
-                                              class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
-                                    <span class="absolute bottom-3 right-3 text-xs text-slate-400">
-                                        {{ (requestForm.reqDescription || '').length }}/100
+                                <div class="flex items-center justify-between gap-3 mb-2">
+                                    <label for="reqDescription" class="block text-xs font-bold text-slate-700">
+                                        Description <span class="text-red-500">*</span>
+                                    </label>
+                                    <span class="text-xs tabular-nums"
+                                          ng-class="(reqDescription || '').length >= 100 ? 'text-amber-600' : 'text-slate-400'">
+                                        {{ (reqDescription || '').length }}/100
                                     </span>
                                 </div>
+                                <textarea id="reqDescription"
+                                          name="reqDescription"
+                                          ng-model="reqDescription"
+                                          ng-maxlength="100"
+                                          maxlength="100"
+                                          required
+                                          rows="3"
+                                          placeholder="Describe the issue, location, and anything important..."
+                                          class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 resize-y min-h-[92px] focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
                             </div>
 
-                            <div class="md:col-span-3 flex justify-end">
-                                <button type="button"
-                                        ng-click="handleSubmitRequest()"
-                                        ng-disabled="submitting"
-                                        class="px-8 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-xl text-sm font-bold transition-all shadow-md focus:ring-2 focus:ring-green-500">
-                                    <lucide-icon name="send" size="14" class="inline mr-1"></lucide-icon>
+                            <div class="md:col-span-3 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+                                <p class="text-xs text-slate-500">Both fields are required.</p>
+                                <button type="submit"
+                                        ng-disabled="submitting || !reqCategory || !(reqDescription || '').trim() || (reqDescription || '').length > 100"
+                                        class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed text-white rounded-xl text-sm font-bold transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                    <lucide-icon ng-if="!submitting" name="send" size="15"></lucide-icon>
+                                    <lucide-icon ng-if="submitting" name="loader-circle" size="15" class="animate-spin"></lucide-icon>
                                     {{ submitting ? 'Submitting…' : 'Submit Request' }}
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
 
-                    <div ng-if="myMaintenance.length === 0"
+                    <div ng-if="myMaintenance.length === 0 && !showRequestForm"
                          class="text-center py-8">
                         <lucide-icon name="wrench" size="28" class="text-slate-200 mx-auto mb-2"></lucide-icon>
-                        <p class="text-slate-400 text-sm">
-                            No maintenance requests yet.
-                        </p>
-                        <p class="text-slate-400 text-xs mt-0.5">
-                            Submit a request above when something needs fixing.
-                        </p>
+                        <p class="text-slate-500 text-sm font-medium">No maintenance requests yet.</p>
+                        <p class="text-slate-400 text-xs mt-1">Your submitted requests will appear here.</p>
                     </div>
 
                     <div ng-if="myMaintenance.length > 0"
@@ -565,7 +527,7 @@
                     </span>
                 </div>
 
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm w-full">
+                <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm w-full">
                     <div class="flex items-center gap-8 overflow-x-auto pb-4">
                         <div ng-repeat="occ in currentTenant.additionalOccupants track by $index"
                              class="flex flex-col items-center gap-3 min-w-[5rem]">
@@ -624,7 +586,7 @@
                     Reason for Profile Change
                 </h3>
                 <p class="text-xs text-slate-500 mt-1">
-                    Tenant Profile Request
+                    Reviewed by the property manager
                 </p>
             </div>
         </div>
@@ -641,7 +603,7 @@
         </label>
 
         <textarea id="profileChangeReason"
-                  ng-model="profileChangeReason"
+                  ng-model="reason"
                   ng-disabled="isSavingProfile"
                   maxlength="1000"
                   rows="4"
@@ -649,7 +611,7 @@
                   class="w-full resize-y rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-100 disabled:opacity-60"></textarea>
 
         <p class="mt-1 text-right text-xs text-slate-400">
-            {{ (profileChangeReason || '').length }}/1000
+            {{ (reason || '').length }}/1000
         </p>
 
         <!-- Actions -->
@@ -663,8 +625,8 @@
             </button>
 
             <button type="button"
-                    ng-click="confirmProfileChange()"
-                    ng-disabled="isSavingProfile || !profileChangeReason || !profileChangeReason.trim()"
+                    ng-click="handleSaveProfile()"
+                    ng-disabled="isSavingProfile || !reason || !reason.trim()"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                 <lucide-icon name="send" size="15"></lucide-icon>
                 {{ isSavingProfile ? 'Submitting...' : 'Submit Request' }}
