@@ -1,7 +1,10 @@
 ﻿app.controller('controller', function (service, $scope, $timeout, $interval, $http, $sce, $window) {
 
-
-
+    $scope.banner = sessionStorage.getItem("banner") !== "hidden";
+    $scope.hideBanner = function () {
+        $scope.banner = !$scope.banner
+        sessionStorage.setItem("banner", "hidden")
+    }
     // ==========================================
     // 3. UI & TOAST NOTIFICATIONS
     // ==========================================
@@ -1527,7 +1530,10 @@
             return req.status === status;
         }).length;
     };
-
+    $scope.maintenanceDateDescending = true;
+    $scope.maintenanceDateSort = function () {
+        $scope.maintenanceDateDescending = !$scope.maintenanceDateDescending;
+    }
     $scope.filteredMaintenance = function () {
         if (!$scope.maintenanceRequests) return [];
 
@@ -3213,6 +3219,24 @@
         }
         $scope.formErrors = e;
         return Object.keys(e).length === 0;
+    };
+
+    $scope.allowManagerNameOnly = function ($event) {
+        if (!$scope.form) return;
+
+        var name = $scope.form.name || "";
+        var cleaned = name.replace(/[^A-Za-z ]/g, "");
+
+        if (name !== cleaned) {
+            $scope.form.name = cleaned;
+        }
+    };
+
+    $scope.sanitizeManagerName = function () {
+        if (!$scope.form) return;
+
+        $scope.form.name = ($scope.form.name || "")
+            .replace(/[^A-Za-z ]/g, "");
     };
     $scope.handleSave = function ($event) {
         if ($event) $event.preventDefault();

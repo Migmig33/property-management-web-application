@@ -75,6 +75,10 @@
                 class="px-4 py-2 rounded-xl text-sm font-medium transition-all">
             Resolved
         </button>
+
+        <button ng-click="maintenanceDateSort()" class="bg-white text-slate-600 border border-slate-200 hover:border-slate-300 px-4 py-3 rounded-xl text-sm font-medium transition-all" >
+            {{maintenanceDateDescending ? 'New' : 'Old'}}
+        </button>
     </div>
 
     <!-- Search -->
@@ -118,7 +122,7 @@
 
     <!-- Request Cards (Loaded State) -->
     <div ng-if="!isLoading" class="space-y-3">
-        <div ng-repeat="req in filteredMaintenance()"
+        <div ng-repeat="req in filteredMaintenance() | orderBy:'createdAt':maintenanceDateDescending "
              class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1 min-w-0">
