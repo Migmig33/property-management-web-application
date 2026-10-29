@@ -317,6 +317,8 @@
     <Content Include="Content\Chart.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="google69aeed6faa584875.html" />
+
     <Content Include="Content\Site.css" />
     <Content Include="LinqToDB.Templates\CopyMe.MySql.tt.txt" />
     <Content Include="Scripts\angular-animate.js" />
