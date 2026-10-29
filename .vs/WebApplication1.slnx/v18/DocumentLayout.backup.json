@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|c:\\users\\quise\\onedrive\\desktop\\property-management-application\\webapplication1\\google69aeed6faa584875.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{7AEB283F-A353-4B7D-A7FD-E88061351A80}|WebApplication1\\WebApplication1.csproj|solutionrelative:webapplication1\\google69aeed6faa584875.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "google69aeed6faa584875.html",
+              "DocumentMoniker": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\google69aeed6faa584875.html",
+              "RelativeDocumentMoniker": "WebApplication1\\google69aeed6faa584875.html",
+              "ToolTip": "C:\\Users\\quise\\OneDrive\\Desktop\\property-management-application\\WebApplication1\\google69aeed6faa584875.html",
+              "RelativeToolTip": "WebApplication1\\google69aeed6faa584875.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2026-10-29T11:40:35.417Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
