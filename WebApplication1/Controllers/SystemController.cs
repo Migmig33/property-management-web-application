@@ -70,12 +70,12 @@ namespace WebApplication1.Controllers
             return View("Renters/UnitDetails");
 
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Dashboard()
         {
             return View("Admin/Dashboard");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Units()
         {
             return View("Admin/Units");
@@ -85,18 +85,18 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Tenants");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Bookings()
         {
             return View("Admin/Bookings");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
 
         public ActionResult Maintenance()
         {
             return View("Admin/Maintenance");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
 
         public ActionResult Payments()
         {
@@ -2571,43 +2571,95 @@ namespace WebApplication1.Controllers
 
         public JsonResult SendPaymentNotification(int? Tid)
         {
-            System.Diagnostics.Debug.WriteLine("Received Tid: " + Tid);
-            if (!Tid.HasValue) { return Json(new { success = false, message = "Invalid tenant ID." }, JsonRequestBehavior.AllowGet); }
-
-            var tenant = new tenant();
-            var payment = new payment();
-            using (var db = new DB_Context())
+            if (!Tid.HasValue)
             {
-                tenant = db.tenant.FirstOrDefault(t => t.Tid == Tid);
-                payment = db.payment.FirstOrDefault(p => p.Tid == Tid && p.paidDate == null);
-
+                return Json(new { success = false, message = "Invalid tenant ID." });
             }
+
             try
             {
-                // Compose the message
-                string message = $"Hello {tenant.name},\n\n" +
-                $"This is to inform you that your Post-Dated Check (PDC) payment of {payment.amount:C} due on {payment.dueDate} was unsuccessful.\n\n" +
-                "Please arrange an alternative payment method and settle your outstanding balance as soon as possible.\n\n" +
-                "Thank you.";
-                // Send the notification (assuming NotificationService.SendEmail exists)
-                var phone = SmsServices.NormalizePhone(tenant.phone);
-                string error = SmsServices.SendSms(phone, message);
-                if (error == null)
+                using (var db = new DB_Context())
                 {
-                    return Json(new { success = true, message = "Notification sent successfully." });
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("Philsms Error: ", error);
-                    return Json(new { success = false, message = "Failed to send notification." + error });
+                    var tenant = db.tenant.FirstOrDefault(t => t.Tid == Tid.Value);
+
+                    if (tenant == null)
+                    {
+                        return Json(new { success = false, message = "Tenant not found." });
+                    }
+
+                    var payment = db.payment.FirstOrDefault(
+                        p => p.Tid == Tid.Value && p.paidDate == null
+                    );
+
+                    if (payment == null)
+                    {
+                        return Json(new { success = false, message = "No unpaid payment found." });
+                    }
+
+                    string message =
+                        $"Hello {tenant.name},\n\n" +
+                        $"This is to inform you that your Post-Dated Check (PDC) payment of {payment.amount:C} due on {payment.dueDate} was unsuccessful.\n\n" +
+                        "Please arrange an alternative payment method and settle your outstanding balance as soon as possible.\n\n" +
+                        "Thank you.";
+
+                    string phone = SmsServices.NormalizePhone(tenant.phone);
+                    string error = null;
+
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(phone))
+                        {
+                            error = "Invalid phone number.";
+                        }
+                        else
+                        {
+                            error = SmsServices.SendSms(phone, message);
+                        }
+                    }
+                    catch (Exception smsEx)
+                    {
+                        error = smsEx.Message;
+                    }
+
+                    string status = error == null ? "Sent" : "Failed";
+
+                    // Save the SMS attempt, whether successful or failed.
+                    db.sms_log.Add(new sms_log
+                    {
+                        Tid = tenant.Tid,
+                        message = message,
+                        type = "Payment Failed",
+                        status = status,
+                        sentAt = DateTime.Now
+                    });
+
+                    db.SaveChanges();
+
+                    if (status == "Sent")
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Notification sent and saved successfully."
+                        });
+                    }
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Notification failed and the attempt was saved. " + error
+                    });
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ErrorHandling(ex) });
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                });
             }
         }
-
         public ActionResult ExportAuditTrail()
         {
             using (var connect = new DB_Context())
@@ -2700,7 +2752,6 @@ namespace WebApplication1.Controllers
                             $"Address: {thatTenant.address}\n\n" +
                             "Please log in to your tenant portal to review your updated information. " +
                             "If you notice any discrepancies, please contact the property manager.";
-
                     }
                     else
                     {
@@ -2717,24 +2768,47 @@ namespace WebApplication1.Controllers
                             "Please review the manager's notes and contact the property manager if you need clarification.";
                     }
 
-                    // Persist the review before attempting SMS delivery.
+                    // Persist the profile request review.
                     connect.SaveChanges();
 
-                    // Send notification and record whether delivery was successful.
+                    // Send SMS notification.
                     bool notificationFailed = false;
+                    string smsStatus = "Failed";
 
                     try
                     {
                         var phone = SmsServices.NormalizePhone(thatTenant.phone);
-                        var error = SmsServices.SendSms(phone, message);
 
-                        notificationFailed = error != null;
+                        if (string.IsNullOrWhiteSpace(phone))
+                        {
+                            notificationFailed = true;
+                            smsStatus = "Invalid Number";
+                        }
+                        else
+                        {
+                            var error = SmsServices.SendSms(phone, message);
+
+                            notificationFailed = error != null;
+                            smsStatus = notificationFailed ? "Failed" : "Sent";
+                        }
                     }
                     catch
                     {
-                        // The request was saved even if the SMS service throws an exception.
                         notificationFailed = true;
+                        smsStatus = "Failed";
                     }
+
+                    // Save SMS notification log.
+                    connect.sms_log.Add(new sms_log
+                    {
+                        Tid = thatTenant.Tid,
+                        message = message,
+                        type = "TenantProfileRequest",
+                        status = smsStatus,
+                        sentAt = DateTime.Now
+                    });
+
+                    connect.SaveChanges();
 
                     string action = status == "accepted" ? "accepted" : "declined";
 

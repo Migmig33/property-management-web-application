@@ -11,7 +11,12 @@
             return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
         }).join('&');
     }
-
+    this.GetMySmsNotificationsService = function () {
+        return $http.get('/TenantPortal/GetMySmsNotifications');
+    };
+    this.GetMyProfileChangeRequestsService = function () {
+        return $http.get('/TenantPortal/GetMyProfileChangeRequests');
+    };
     //Login Service
     this.authService = function (data) {
         var response = $http({

@@ -20,8 +20,8 @@ namespace WebApplication1.Controllers
             [HttpGet]
             public JsonResult GetCurrentTenantData()
             {
-                // 1. Get logged-in Tenant ID (e.g., from Session)
-                int currentTid = Convert.ToInt32(Session["LoggedInTid"]);
+            // 1. Get logged-in Tenant ID (e.g., from Session)
+            int currentTid = Convert.ToInt32(Session["LoggedInTid"]);
 
 
                 if (currentTid == 0)
@@ -167,82 +167,241 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                using(var connect = new DB_Context())
+                if (data == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid request data."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                using (var connect = new DB_Context())
                 {
                     int currentTenantId = Convert.ToInt32(Session["LoggedInTid"]);
-                    var currentTenant = connect.tenant.FirstOrDefault(t => t.Tid == currentTenantId);
-                    var existingTenantRequest = connect.tenant_profile_change_request.FirstOrDefault(x => x.Tid == currentTenantId);
-                    if(existingTenantRequest == null)
+
+                    var currentTenant = connect.tenant
+                        .FirstOrDefault(t => t.Tid == currentTenantId);
+
+                    if (currentTenant == null)
                     {
-                        //Insert 
-                        var tenantRequest = new tenant_profile_change_request
+                        return Json(new
                         {
-                            Tid = currentTenantId,
-                            requestedEmail = data.requestedEmail,
-                            requestedPhone = data.requestedPhone,
-                            requestedOccupation = data.requestedOccupation,
-                            requestedAddress = data.requestedAddress,
-                            reason = data.reason,
-                            status = "Pending",
-                            requestedAt = DateTime.Now,
-                            
-                        };
-                        connect.tenant_profile_change_request.Add(tenantRequest);
+                            success = false,
+                            message = "Tenant not found."
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    // Get the tenant's latest profile change request.
+                    var latestTenantRequest = connect.tenant_profile_change_request
+                        .Where(x => x.Tid == currentTenantId)
+                        .OrderByDescending(x => x.requestedAt)
+                        .ThenByDescending(x => x.id)
+                        .FirstOrDefault();
+
+                    // If the latest request is still pending, update that record.
+                    if (latestTenantRequest != null &&
+                        string.Equals(
+                            latestTenantRequest.status,
+                            "Pending",
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        latestTenantRequest.requestedEmail = data.requestedEmail;
+                        latestTenantRequest.requestedPhone = data.requestedPhone;
+                        latestTenantRequest.requestedOccupation = data.requestedOccupation;
+                        latestTenantRequest.requestedAddress = data.requestedAddress;
+                        latestTenantRequest.reason = data.reason;
+
+                        // Keep the request pending.
+                        latestTenantRequest.status = "Pending";
+
                         connect.SaveChanges();
-                        AuditLogger.Log("user", "info", "Change Profile Request " + currentTenant.name, CurrentTenantName());
-                        bool notifStatus = true;
-                        var existingPropertyManager = connect.admin.Where(a => a.role == 2).ToList();
-                        foreach(var manager in existingPropertyManager)
-                        {
-                            string message =
-                                $"Hello {manager.name},\n\n" +
-                                $"{currentTenant.name} has submitted a request to change their profile information.\n\n" +
-                                $"Reason for the request: {data.reason}\n\n" +
-                                "Please review the request and approve or decline it when you have a moment.\n\n" +
-                                "Thank you!";
-                            var phone = SmsServices.NormalizePhone(manager.phone);
-                            string error = SmsServices.SendSms(phone, message);
-                            if (error != null)
-                            {
-                                notifStatus = false;
-                            }
-                        }
 
                         return Json(new
                         {
                             success = true,
-                            message = notifStatus
-                                ? "Request profile change successfully added."
-                                : "Request was added, but some notifications could not be sent."
+                            message = "Your pending profile change request has been updated."
                         }, JsonRequestBehavior.AllowGet);
-
-
                     }
-                    else
+
+                    // If there is no request or the latest one was accepted/declined,
+                    // create a new request record.
+                    var tenantRequest = new tenant_profile_change_request
                     {
-                        //update
-                        existingTenantRequest.requestedPhone = data.requestedPhone;
-                        existingTenantRequest.requestedOccupation = data.requestedOccupation;
-                        existingTenantRequest.requestedEmail = data.requestedEmail;
-                        existingTenantRequest.requestedAddress = data.requestedAddress;
-                        existingTenantRequest.status = data.status;
-                        existingTenantRequest.reason = data.reason;
-                        
-                        connect.SaveChanges();
+                        Tid = currentTenantId,
+                        requestedEmail = data.requestedEmail,
+                        requestedPhone = data.requestedPhone,
+                        requestedOccupation = data.requestedOccupation,
+                        requestedAddress = data.requestedAddress,
+                        reason = data.reason,
+                        status = "Pending",
+                        requestedAt = DateTime.Now
+                    };
 
+                    connect.tenant_profile_change_request.Add(tenantRequest);
+                    connect.SaveChanges();
 
+                    AuditLogger.Log(
+                        "user",
+                        "info",
+                        "Change Profile Request " + currentTenant.name,
+                        CurrentTenantName()
+                    );
 
+                    // Notify property managers about the new request.
+                    bool notifStatus = true;
 
-                            return Json(new { success = true, message = "Request profile change successfully modified" }, JsonRequestBehavior.AllowGet);
+                    var existingPropertyManager = connect.admin
+                        .Where(a => a.role == 2)
+                        .ToList();
 
+                    foreach (var manager in existingPropertyManager)
+                    {
+                        string message =
+                            $"Hello {manager.name},\n\n" +
+                            $"{currentTenant.name} has submitted a request to change their profile information.\n\n" +
+                            $"Reason for the request: {data.reason}\n\n" +
+                            "Please review the request and approve or decline it when you have a moment.\n\n" +
+                            "Thank you!";
 
+                        var phone = SmsServices.NormalizePhone(manager.phone);
+
+                        if (string.IsNullOrWhiteSpace(phone))
+                        {
+                            notifStatus = false;
+                            continue;
+                        }
+
+                        string error = SmsServices.SendSms(phone, message);
+
+                        if (error != null)
+                        {
+                            notifStatus = false;
+                        }
                     }
-                }
 
-                
-            }catch(Exception ex)
+                    return Json(new
+                    {
+                        success = true,
+                        message = notifStatus
+                            ? "Profile change request successfully submitted."
+                            : "Request was submitted, but some notifications could not be sent."
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
             {
-                return Json(new { success = false, message = ErrorHandling(ex) }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult GetMySmsNotifications()
+        {
+            if (!int.TryParse(
+                Convert.ToString(Session["LoggedInTid"] ?? 17),
+                out int currentTid) || currentTid <= 0)
+            {
+                return Json(
+                    new { success = false, message = "Unauthorized." },
+                    JsonRequestBehavior.AllowGet
+                );
+            }
+
+            using (var db = new DB_Context())
+            {
+                var logs = db.sms_log
+                    .Where(x =>
+                        x.Tid == currentTid &&
+                        (
+                            x.type == "Lease Expiry" ||
+                            x.type == "Payment Due" ||
+                            x.type == "Payment Failed" ||
+                            x.type == "TenantProfileRequest"
+                        ))
+                    .Select(x => new
+                    {
+                        id = x.id,
+                        type = x.type,
+                        message = x.message,
+                        sentAt = x.sentAt
+                    })
+                    .ToList();
+
+                // Remove duplicate notifications with identical types and messages.
+                var notifications = logs
+                    .GroupBy(x => new { x.type, x.message })
+                    .Select(g => g
+                        .OrderByDescending(x => x.sentAt)
+                        .ThenByDescending(x => x.id)
+                        .FirstOrDefault())
+                    .OrderByDescending(x => x.sentAt)
+                    .Select(x => new
+                    {
+                        id = x.id,
+                        type = x.type,
+                        message = x.message,
+                        sentAt = x.sentAt.ToString("MMM d, yyyy h:mm tt")
+                    })
+                    .ToList();
+
+                return Json(
+                    notifications,
+                    JsonRequestBehavior.AllowGet
+                );
+            }
+        }
+        public JsonResult GetMyProfileChangeRequests()
+        {
+            if (!int.TryParse(
+                Convert.ToString(Session["LoggedInTid"]),
+                out int currentTid) || currentTid <= 0)
+            {
+                return Json(
+                    new { success = false, message = "Unauthorized." },
+                    JsonRequestBehavior.AllowGet
+                );
+            }
+
+            using (var db = new DB_Context())
+            {
+                var requests = db.tenant_profile_change_request
+                    .Where(r => r.Tid == currentTid)
+                    .OrderByDescending(r => r.requestedAt)
+                    .ToList()
+                    .Select(r => new
+                    {
+                        id = r.id,
+                        requestedEmail = r.requestedEmail,
+                        requestedPhone = r.requestedPhone,
+                        requestedOccupation = r.requestedOccupation,
+                        requestedAddress = r.requestedAddress,
+                        reason = r.reason,
+
+                        status = string.IsNullOrWhiteSpace(r.status)
+                            ? "pending"
+                            : r.status.Trim().ToLowerInvariant(),
+
+                        requestedAt = r.requestedAt.ToString("MMM d, yyyy h:mm tt"),
+
+                        reviewedAt = r.reviewedAt.HasValue
+                            ? r.reviewedAt.Value.ToString("MMM d, yyyy h:mm tt")
+                            : null,
+
+                        reviewNotes = r.reviewNotes
+                    })
+                    .ToList();
+
+                return Json(
+                    new
+                    {
+                        success = true,
+                        data = requests
+                    },
+                    JsonRequestBehavior.AllowGet
+                );
             }
         }
         //Helper

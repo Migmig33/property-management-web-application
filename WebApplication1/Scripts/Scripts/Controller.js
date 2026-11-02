@@ -383,14 +383,108 @@
         }).finally(function () { $scope.loading = false; });
     };
 
+    $scope.otp = ['', '', '', '', '', ''];
+
+    // Handle normal typing
     $scope.otpNext = function (index) {
-        var val = $scope.otp[index];
-        if (!/^\d?$/.test(val)) { $scope.otp[index] = ''; return; }
+        var val = String($scope.otp[index] || '').replace(/\D/g, '');
+
+        // Handle multiple digits if an input receives them through autofill.
+        if (val.length > 1) {
+            val = val.slice(0, 6 - index);
+
+            for (var i = index; i < 6; i++) {
+                $scope.otp[i] = val[i - index] || '';
+            }
+
+            var nextIndex = Math.min(index + val.length, 5);
+
+            setTimeout(function () {
+                var nextInput = document.getElementById('otp' + nextIndex);
+                if (nextInput) nextInput.focus();
+            }, 0);
+
+            return;
+        }
+
+        $scope.otp[index] = val;
+
         if (val && index < 5) {
-            document.getElementById('otp' + (index + 1)).focus();
+            var nextInput = document.getElementById('otp' + (index + 1));
+            if (nextInput) nextInput.focus();
         }
     };
 
+
+    // Handle pasting a complete OTP
+    $scope.otpPaste = function (event, index) {
+        event.preventDefault();
+
+        var clipboard = event.clipboardData ||
+            (event.originalEvent && event.originalEvent.clipboardData) ||
+            window.clipboardData;
+
+        var pastedText = clipboard
+            ? clipboard.getData('text')
+            : '';
+
+        var digits = String(pastedText)
+            .replace(/\D/g, '')
+            .slice(0, 6 - index);
+
+        if (!digits.length) return;
+
+        // Distribute pasted digits across the remaining inputs.
+        for (var i = index; i < 6; i++) {
+            $scope.otp[i] = digits[i - index] || '';
+        }
+
+        // Focus the last filled box or the next empty box.
+        var nextIndex = Math.min(index + digits.length, 5);
+
+        setTimeout(function () {
+            var nextInput = document.getElementById('otp' + nextIndex);
+            if (nextInput) nextInput.focus();
+        }, 0);
+    };
+
+
+    // Handle Backspace and arrow navigation
+    $scope.otpKeyDown = function (event, index) {
+
+        if (event.key === 'Backspace' || event.keyCode === 8) {
+            event.preventDefault();
+
+            if ($scope.otp[index]) {
+                // Clear the current box first.
+                $scope.otp[index] = '';
+            }
+            else if (index > 0) {
+                // If already empty, move backward and clear the previous box.
+                $scope.otp[index - 1] = '';
+
+                var previousInput = document.getElementById('otp' + (index - 1));
+
+                if (previousInput) {
+                    previousInput.focus();
+                }
+            }
+
+            return;
+        }
+
+        // Navigate left
+        if (event.key === 'ArrowLeft' && index > 0) {
+            event.preventDefault();
+            document.getElementById('otp' + (index - 1)).focus();
+        }
+
+        // Navigate right
+        if (event.key === 'ArrowRight' && index < 5) {
+            event.preventDefault();
+            document.getElementById('otp' + (index + 1)).focus();
+        }
+    };
     $scope.verifyCode = function () {
         var code = $scope.otp.join('');
 
@@ -1897,6 +1991,8 @@
     $scope.submitting = false;
 
     $scope.init = function () {
+        $scope.getAllSmsNotifications();
+        $scope.getAllProfileChangeRequests();
         $http.get('/TenantPortal/GetCurrentTenantData')
             .then(function (response) {
                 var data = response.data;
@@ -2143,7 +2239,30 @@
             $scope.isLoading = false;
         });
     };
+    $scope.getAllSmsNotifications = function () {
+        $scope.isLoadingNotifications = true;
 
+        service.GetMySmsNotificationsService().then(function (response) {
+            if (Array.isArray(response.data)) {
+                $scope.mySmsLogs = response.data || [];
+            } else {
+                $scope.mySmsLogs = [];
+                $scope.showToast(
+                    response.data.message || "Error loading notifications.",
+                    "error"
+                );
+            }
+
+            setTimeout(function () {
+                if (window.lucide) { window.lucide.createIcons(); }
+            }, 50);
+
+        }, function (error) {
+            $scope.showToast("Server error occurred while fetching notifications.", "error");
+        }).finally(function () {
+            $scope.isLoadingNotifications = false;
+        });
+    };
     $scope.filteredBrowse = function () {
         var list = $scope.browseUnits || [];
 
@@ -3772,6 +3891,31 @@
             $scope.isReviewingProfileRequest = false;
         })
     }
+    $scope.myProfileChangeRequests = [];
+
+    $scope.getAllProfileChangeRequests = function () {
+        $scope.isLoadingProfileRequests = true;
+
+        service.GetMyProfileChangeRequestsService().then(function (response) {
+            if (response.data.success) {
+                $scope.myProfileChangeRequests = response.data.data || [];
+            } else {
+                $scope.showToast(
+                    "Error loading profile requests: " + response.data.message,
+                    "error"
+                );
+            }
+
+        }, function (error) {
+            $scope.showToast(
+                "Server error occurred while fetching profile requests.",
+                "error"
+            );
+
+        }).finally(function () {
+            $scope.isLoadingProfileRequests = false;
+        });
+    };
 
 
 });

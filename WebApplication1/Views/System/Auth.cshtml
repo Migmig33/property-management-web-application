@@ -89,7 +89,7 @@
                     </button>
                 </div>
 
-                <!-- FORGOT OTP STEP -->
+                <!-- FORGOT OTP STEP (UNCHANGED) -->
                 <div ng-show="step === 'forgot-otp'" class="animate-step">
                     <div class="flex justify-center mb-4">
                         <div class="w-12 h-12 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-center">
@@ -99,18 +99,25 @@
                             </svg>
                         </div>
                     </div>
+
                     <div class="text-center mb-5">
                         <h2 class="text-slate-900 text-xl font-extrabold mb-1.5">Check your inbox</h2>
-                        <p class="text-slate-500 text-[13px]">A 6-digit code was sent to <br /><span class="text-green-600 font-bold">{{ fpEmail }}</span></p>
+                        <p class="text-slate-500 text-[13px]">
+                            A 6-digit code was sent to <br />
+                            <span class="text-green-600 font-bold">{{ fpEmail }}</span>
+                        </p>
                     </div>
+
                     <div class="flex gap-1.5 justify-center mb-5">
                         <input ng-repeat="i in [0,1,2,3,4,5]" id="fpOtp{{ i }}" type="text" inputmode="numeric" maxlength="1" ng-model="fpOtp[i]" ng-change="fpOtpNext(i)"
                                class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all bg-slate-50 text-slate-900" />
                     </div>
+
                     <button ng-click="verifyResetCode()" ng-disabled="fpLoading" ng-class="{'opacity-60': fpLoading}"
                             class="w-full flex items-center justify-center gap-2 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl text-[13px] font-semibold transition-all shadow-md shadow-green-200">
                         {{ fpLoading ? 'Verifying…' : 'Verify Code' }}
                     </button>
+
                     <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-5">
                         <button ng-click="step = 'forgot'" class="text-[12px] font-semibold text-slate-500 hover:text-slate-800">Change email</button>
                         <button ng-click="sendResetCode()" ng-disabled="fpCooldown > 0" class="text-[12px] font-semibold disabled:text-slate-400" ng-class="fpCooldown === 0 ? 'text-green-600 hover:text-green-700' : ''">
@@ -123,20 +130,26 @@
                 <div ng-show="step === 'reset'" class="animate-step">
                     <div class="text-center mb-5">
                         <h2 class="text-slate-900 text-xl font-extrabold mb-1.5">Set New Password</h2>
-                        <p class="text-slate-500 text-[13px]">Create a new password for <span class="font-bold text-slate-700">{{ fpEmail }}</span></p>
+                        <p class="text-slate-500 text-[13px]">
+                            Create a new password for <span class="font-bold text-slate-700">{{ fpEmail }}</span>
+                        </p>
                     </div>
+
                     <div class="space-y-3.5">
                         <div>
                             <input type="password" ng-model="fpNewPw" placeholder="New Password (Min. 8 characters)" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13px] focus:outline-none focus:ring-2 focus:ring-green-500" />
+
                             <div ng-if="fpNewPw" class="mt-2">
                                 <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                     <div class="h-full rounded-full transition-all duration-300" ng-class="pwStrength().color" ng-style="{ width: pwStrength().pct + '%' }"></div>
                                 </div>
                             </div>
                         </div>
+
                         <div>
                             <input type="password" ng-model="fpConfirmPw" placeholder="Confirm Password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13px] focus:outline-none focus:ring-2 focus:ring-green-500" />
                         </div>
+
                         <button ng-click="resetPassword()" ng-disabled="!canSavePassword()" ng-class="{'opacity-60 cursor-not-allowed': !canSavePassword()}"
                                 class="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl text-[13px] font-semibold transition-all shadow-md shadow-green-200 mt-2">
                             {{ fpSaving ? 'Saving…' : 'Save New Password' }}
@@ -167,10 +180,12 @@
                             <label class="block text-[12px] font-bold text-slate-700 mb-1.5">Email Address</label>
                             <input type="email" ng-model="email" placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13px] focus:outline-none focus:ring-2 focus:ring-green-500 transition-all" />
                         </div>
+
                         <div>
                             <label class="block text-[12px] font-bold text-slate-700 mb-1.5">Password</label>
                             <input type="password" ng-model="password" placeholder="Enter your password" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[13px] focus:outline-none focus:ring-2 focus:ring-green-500 transition-all" />
                         </div>
+
                         <button ng-click="authFunc()" ng-disabled="loading" class="w-full flex items-center justify-center gap-2 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-xl text-[13px] font-semibold transition-all shadow-md shadow-green-200 mt-2">
                             <span ng-if="!loading">Sign In</span>
                             <span ng-if="loading">Signing in...</span>
@@ -199,20 +214,55 @@
                 <div ng-show="step === 'verify'" class="animate-step">
                     <div class="mb-6 text-center">
                         <h2 class="text-xl font-extrabold text-slate-900 mb-1.5">Security Check</h2>
-                        <p class="text-slate-500 text-[13px]">6-digit code sent to <br /><span class="font-bold text-slate-800">{{ email }}</span></p>
+                        <p class="text-slate-500 text-[13px]">
+                            6-digit code sent to <br />
+                            <span class="font-bold text-slate-800">{{ email }}</span>
+                        </p>
                     </div>
+
                     <div class="flex gap-1.5 justify-center mb-6">
-                        <input type="text" maxlength="1" ng-model="otp[0]" ng-change="otpNext(0)" ng-keydown="otpKeyDown($event, 0)" id="otp0" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
-                        <input type="text" maxlength="1" ng-model="otp[1]" ng-change="otpNext(1)" ng-keydown="otpKeyDown($event, 1)" id="otp1" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
-                        <input type="text" maxlength="1" ng-model="otp[2]" ng-change="otpNext(2)" ng-keydown="otpKeyDown($event, 2)" id="otp2" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
-                        <input type="text" maxlength="1" ng-model="otp[3]" ng-change="otpNext(3)" ng-keydown="otpKeyDown($event, 3)" id="otp3" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
-                        <input type="text" maxlength="1" ng-model="otp[4]" ng-change="otpNext(4)" ng-keydown="otpKeyDown($event, 4)" id="otp4" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
-                        <input type="text" maxlength="1" ng-model="otp[5]" ng-change="otpNext(5)" ng-keydown="otpKeyDown($event, 5)" id="otp5" class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+                        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code"
+                               ng-model="otp[0]" ng-change="otpNext(0)"
+                               ng-keydown="otpKeyDown($event, 0)" ng-paste="otpPaste($event, 0)"
+                               id="otp0"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+
+                        <input type="text" maxlength="1" inputmode="numeric"
+                               ng-model="otp[1]" ng-change="otpNext(1)"
+                               ng-keydown="otpKeyDown($event, 1)" ng-paste="otpPaste($event, 1)"
+                               id="otp1"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+
+                        <input type="text" maxlength="1" inputmode="numeric"
+                               ng-model="otp[2]" ng-change="otpNext(2)"
+                               ng-keydown="otpKeyDown($event, 2)" ng-paste="otpPaste($event, 2)"
+                               id="otp2"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+
+                        <input type="text" maxlength="1" inputmode="numeric"
+                               ng-model="otp[3]" ng-change="otpNext(3)"
+                               ng-keydown="otpKeyDown($event, 3)" ng-paste="otpPaste($event, 3)"
+                               id="otp3"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+
+                        <input type="text" maxlength="1" inputmode="numeric"
+                               ng-model="otp[4]" ng-change="otpNext(4)"
+                               ng-keydown="otpKeyDown($event, 4)" ng-paste="otpPaste($event, 4)"
+                               id="otp4"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
+
+                        <input type="text" maxlength="1" inputmode="numeric"
+                               ng-model="otp[5]" ng-change="otpNext(5)"
+                               ng-keydown="otpKeyDown($event, 5)" ng-paste="otpPaste($event, 5)"
+                               id="otp5"
+                               class="w-[42px] h-[48px] text-center text-lg font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-green-500" />
                     </div>
+
                     <button ng-click="verifyCode()" ng-disabled="loading" class="w-full flex items-center justify-center gap-2 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-xl text-[13px] font-semibold transition-all shadow-md shadow-green-200">
                         <span ng-if="!loading">Verify &amp; Continue</span>
                         <span ng-if="loading">Verifying...</span>
                     </button>
+
                     <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-5">
                         <button ng-click="step = 'credentials'" class="text-[12px] font-semibold text-slate-500 hover:text-slate-800">Back</button>
                         <button ng-click="resend()" ng-disabled="resendCooldown > 0" class="text-[12px] font-semibold text-green-600 disabled:text-slate-400">
