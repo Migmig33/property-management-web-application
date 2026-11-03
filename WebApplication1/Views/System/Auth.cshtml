@@ -207,6 +207,18 @@
                                 Go back to public site
                             </a>
                         </div>
+                        @{
+                            var recaptchaSiteKey =
+                                System.Configuration.ConfigurationManager
+                                .AppSettings["RecaptchaSiteKey"];
+                        }
+
+                    <script src="https://www.google.com/recaptcha/api.js"
+                            async defer></script>
+
+                        <div class="g-recaptcha"
+                             data-sitekey="@recaptchaSiteKey">
+                        </div>
                     </form>
                 </div>
 

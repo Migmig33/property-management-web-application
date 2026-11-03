@@ -364,24 +364,79 @@
         }, 1000);
     }
 
+
     $scope.authFunc = function () {
+
         if (!$scope.email || !$scope.password) {
-            return $scope.showToast("Please fill out email and password", "error");
+            return $scope.showToast(
+                "Please fill out email and password",
+                "error"
+            );
         }
+
+        // Check if Google CAPTCHA has loaded
+        if (!window.grecaptcha) {
+            return $scope.showToast(
+                "CAPTCHA is not loaded. Please refresh the page.",
+                "error"
+            );
+        }
+
+        // Get CAPTCHA verification token
+        var captchaToken = grecaptcha.getResponse();
+
+        if (!captchaToken) {
+            return $scope.showToast(
+                "Please complete the CAPTCHA verification.",
+                "error"
+            );
+        }
+
         $scope.loading = true;
-        var authData = { email: $scope.email, password: $scope.password };
-        service.authService(authData).then(function (response) {
-            if (response.data.success) {
-                $scope.userRole = response.data.role;
-                $scope.step = 'verify';
-                $scope.otp = [];
-                startCooldown();
-                $scope.showToast(response.data.message, "success");
-            } else {
-                $scope.showToast(response.data.message, "error");
-            }
-        }).finally(function () { $scope.loading = false; });
+
+        var authData = {
+            email: $scope.email,
+            password: $scope.password
+        };
+
+        service.authService(authData, captchaToken)
+            .then(function (response) {
+
+                if (response.data.success) {
+
+                    $scope.userRole = response.data.role;
+                    $scope.step = 'verify';
+                    $scope.otp = [];
+
+                    startCooldown();
+
+                    $scope.showToast(
+                        response.data.message,
+                        "success"
+                    );
+
+                } else {
+
+                    $scope.showToast(
+                        response.data.message,
+                        "error"
+                    );
+
+                }
+
+            })
+            .finally(function () {
+
+                $scope.loading = false;
+
+                // Reset CAPTCHA for the next attempt
+                if (window.grecaptcha && grecaptcha.enterprise) {
+                    grecaptcha.enterprise.reset();
+                }
+
+            });
     };
+
 
     $scope.otp = ['', '', '', '', '', ''];
 

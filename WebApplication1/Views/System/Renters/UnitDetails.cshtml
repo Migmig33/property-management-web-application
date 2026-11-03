@@ -337,6 +337,10 @@
                                 <span class="text-slate-500">Advance Payment</span>
                                 <span class="text-slate-900">&#8369;{{ currentUnit.price | number:0 }}</span>
                             </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500 font-bold">Total Upfront Payment</span>
+                                <span class="text-slate-900 font-bold">&#8369;{{ (currentUnit.price * 2) + currentUnit.price | number:0 }}</span>
+                            </div>
                         </div>
 
                         <!-- Opens the modal. Pure scope flags, no controller call. -->

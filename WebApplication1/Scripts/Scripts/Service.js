@@ -18,15 +18,19 @@
         return $http.get('/TenantPortal/GetMyProfileChangeRequests');
     };
     //Login Service
-    this.authService = function (data) {
+    this.authService = function (data, captchaToken) {
         var response = $http({
             url: "/Auth/Login",
             method: "post",
             data: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" }
-        })
+            headers: {
+                "Content-Type": "application/json",
+                "X-Recaptcha-Token": captchaToken
+            }
+        });
+
         return response;
-    }
+    };
     this.GetAllAmenitiesService = function () {
         return $http({ method: 'get', url: '/System/GetAllAmenities' });
     }

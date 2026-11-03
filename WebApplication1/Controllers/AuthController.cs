@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
@@ -30,8 +31,23 @@ namespace WebApplication1.Controllers
             if (entered == stored) { needsUpgrade = true; return true; }
             return false;
         }
-        public JsonResult Login(LoginModelDTO data)
+        [HttpPost]
+        public async Task<JsonResult> Login(LoginModelDTO data)
         {
+            string captchaError = await VerifyCaptchaAsync();
+
+            if (!string.IsNullOrEmpty(captchaError))
+            {
+                System.Diagnostics.Trace.TraceWarning(
+                    "[reCAPTCHA] " + captchaError
+                );
+
+                return Json(new
+                {
+                    success = false,
+                    message = captchaError
+                });
+            }
             try
             {
                 using (var connect = new DB_Context())
@@ -484,8 +500,9 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost]
-        public JsonResult SendResetCode(string email)
+        public async Task<JsonResult> SendResetCode(string email)
         {
+            
             try
             {
                 if (string.IsNullOrWhiteSpace(email))
@@ -717,6 +734,18 @@ namespace WebApplication1.Controllers
             =========================";
 
             return errorMessage;
+        }
+        private Task<string> VerifyCaptchaAsync()
+        {
+            string token = Request.Headers["X-Recaptcha-Token"];
+
+            // Get hostname, NOT browser User-Agent
+            string hostname = Request.Url.Host;
+
+            return RecaptchaHelper.VerifyAsync(
+                token,
+                hostname
+            );
         }
     }
 }

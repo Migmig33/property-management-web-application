@@ -253,6 +253,7 @@
     </Compile>
     <Compile Include="Helper\AuditLogger.cs" />
     <Compile Include="Helper\CacheHelper.cs" />
+    <Compile Include="Helper\RecaptchaHelper.cs" />
     <Compile Include="Helper\UnitAvailabilityHelper.cs" />
     <Compile Include="Models\Context\DB_Context.cs" />
     <Compile Include="Models\LoginModelDTO.cs" />
