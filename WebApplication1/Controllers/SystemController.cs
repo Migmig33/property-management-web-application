@@ -80,7 +80,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Units");
         }
-        //[CheckSession(AllowedRoles = new[] { 2 })]
+        [CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Tenants()
         {
             return View("Admin/Tenants");

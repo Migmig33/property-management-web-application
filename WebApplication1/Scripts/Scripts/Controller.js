@@ -2119,7 +2119,6 @@
     }
     $scope.handleSubmitRequest = function () {
         if (!$scope.requestForm.reqDescription) {
-            alert(1)
             $scope.showToast("Please describe the issue.", "error");
             return;
         }
@@ -3684,7 +3683,7 @@
     };
 
 
-    $scope.handleSaveProfile = function () {
+    $scope.handleSaveProfile = function() {
         // ---- Validation ----
         if (!$scope.currentTenant.phone) {
 
@@ -3715,6 +3714,7 @@
 
             return $scope.showToast("Please enter a reason for the profile change", "error");
         }
+        $scope.isSavingProfile = true;
 
         var data = {
             id: $scope.id,
@@ -3867,7 +3867,7 @@
     };
 
     $scope.updateStatusTenantProfileRequest = function (id, status, Tid, reviewNotes) {
-        alert(id + status + Tid + reviewNotes)
+       
         if (status == null) {
             return $scope.showToast("Invalid status request", "error");
         }

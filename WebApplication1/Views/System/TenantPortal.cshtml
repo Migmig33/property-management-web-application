@@ -590,7 +590,7 @@
                                 </label>
                                 <select id="reqCategory"
                                         name="reqCategory"
-                                        ng-model="reqCategory"
+                                        ng-model="requestForm.reqCategory"
                                         required
                                         class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                     <option value="">Choose a category</option>
@@ -607,13 +607,13 @@
                                         Description <span class="text-red-500">*</span>
                                     </label>
                                     <span class="text-xs tabular-nums"
-                                          ng-class="(reqDescription || '').length >= 100 ? 'text-amber-600' : 'text-slate-400'">
-                                        {{ (reqDescription || '').length }}/100
+                                          ng-class="(requestForm.reqDescription || '').length >= 100 ? 'text-amber-600' : 'text-slate-400'">
+                                        {{ (requestForm.reqDescription || '').length }}/100
                                     </span>
                                 </div>
                                 <textarea id="reqDescription"
                                           name="reqDescription"
-                                          ng-model="reqDescription"
+                                          ng-model="requestForm.reqDescription"
                                           ng-maxlength="100"
                                           maxlength="100"
                                           required
@@ -625,7 +625,7 @@
                             <div class="md:col-span-3 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
                                 <p class="text-xs text-slate-500">Both fields are required.</p>
                                 <button type="submit"
-                                        ng-disabled="submitting || !reqCategory || !(reqDescription || '').trim() || (reqDescription || '').length > 100"
+                                        ng-disabled="submitting || !requestForm.reqCategory || !(requestForm.reqDescription || '').trim() || (requestForm.reqDescription || '').length > 100"
                                         class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed text-white rounded-xl text-sm font-bold transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
                                     <lucide-icon ng-if="!submitting" name="send" size="15"></lucide-icon>
                                     <lucide-icon ng-if="submitting" name="loader-circle" size="15" class="animate-spin"></lucide-icon>
