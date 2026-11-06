@@ -319,6 +319,9 @@
                         class="px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 transition-all focus:outline-none">
                     {{ tab }}
                 </button>
+                <button ng-click="bookingDateSort()" class="bg-white text-slate-600 border border-slate-200 hover:border-slate-300 px-4 py-3 rounded-xl text-sm font-medium transition-all">
+                    {{bookingDateDescending ? 'New' : 'Old'}}
+                </button>
             </div>
 
             <div class="relative mb-5">
@@ -341,7 +344,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
-                        <tr ng-repeat="b in bookings | filter:searchText | filter:statusFilter" class="hover:bg-slate-50 transition-colors">
+                        <tr ng-repeat="b in bookings | filter:searchText | filter:statusFilter |orderBy:'bookingDateTime':bookingDateDescending" class="hover:bg-slate-50 transition-colors">
                             <td class="px-5 py-3">
                                 <p class="text-slate-900 text-sm font-medium">{{ b.name }}</p>
                                 <p class="text-slate-400 text-xs">{{ b.email }}</p>

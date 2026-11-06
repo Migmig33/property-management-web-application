@@ -14,7 +14,7 @@ namespace WebApplication1.Services
         // TESTING:    TimeSpan.FromSeconds(15)
         // PRODUCTION: TimeSpan.FromHours(24)
         // ============================================================
-        private static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan Interval = TimeSpan.FromMinutes(15);
 
         // Wait a moment after app start so the first request isn't competing
         // with the scan for the connection pool.

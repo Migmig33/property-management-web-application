@@ -430,8 +430,8 @@
                 $scope.loading = false;
 
                 // Reset CAPTCHA for the next attempt
-                if (window.grecaptcha && grecaptcha.enterprise) {
-                    grecaptcha.enterprise.reset();
+                if (window.grecaptcha) {
+                    grecaptcha.reset();
                 }
 
             });
@@ -675,13 +675,22 @@
             list = list.filter(u => u.occupancy === $scope.occupancyFilter);
         }
 
+        // NEW Rental Type Filter
+        if ($scope.rentalTypeFilter !== "All") {
+            list = list.filter(u =>
+                (u.rentalType || "").toLowerCase() ===
+                $scope.rentalTypeFilter.toLowerCase()
+            );
+        }
+
         list = list.sort((a, b) => $scope.sortAsc ? a.unitName.localeCompare(b.unitName) : b.unitName.localeCompare(a.unitName));
         $scope.totalUnits = list.length;
         return list;
     };
-
+    $scope.rentalTypeFilter = "All";
     $scope.toggleSort = function () { $scope.sortAsc = !$scope.sortAsc; };
     $scope.setStatus = function (val) { $scope.statusFilter = val; };
+    $scope.setRentalType = function (val) { $scope.rentalTypeFilter = val; }
     $scope.setOccupancy = function (val) { $scope.occupancyFilter = val; };
 
     $scope.triggerEditUnit = function (unit) {
@@ -1682,6 +1691,14 @@
     $scope.maintenanceDateDescending = true;
     $scope.maintenanceDateSort = function () {
         $scope.maintenanceDateDescending = !$scope.maintenanceDateDescending;
+    }
+    $scope.bookingDateDescending = true;
+    $scope.bookingDateSort = function () {
+        $scope.bookingDateDescending = !$scope.bookingDateDescending;
+    }
+    $scope.paymentDateDescending = true;
+    $scope.paymentDateSort = function () {
+        $scope.paymentDateDescending = !$scope.paymentDateDescending;
     }
     $scope.filteredMaintenance = function () {
         if (!$scope.maintenanceRequests) return [];

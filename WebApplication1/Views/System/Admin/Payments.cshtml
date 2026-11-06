@@ -81,6 +81,7 @@
                 class="px-4 py-2 rounded-xl text-sm font-medium transition-all">
             Unpaid
         </button>
+       
     </div>
 
     <!-- Search -->
@@ -127,7 +128,7 @@
                     </tr>
 
                     <!-- Loaded Rows -->
-                    <tr ng-if="!isLoading" ng-repeat="p in filteredPayments()"
+                    <tr ng-if="!isLoading" ng-repeat="p in filteredPayments() | orderBy:'dueDate':paymentDateDescending"
                         class="hover:bg-slate-50 transition-colors">
 
                         <!-- Tenant -->

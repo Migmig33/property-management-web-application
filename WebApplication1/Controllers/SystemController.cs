@@ -1823,7 +1823,6 @@ namespace WebApplication1.Controllers
             };
         }
 
-
         public ActionResult GetBrowseUnits()
         {
             try
@@ -1837,18 +1836,72 @@ namespace WebApplication1.Controllers
                         {
                             var today = DateTime.Today;
 
-                            var activeUnits = connect.unit.Where(u => u.status == "active").ToList();
-                            var liveTenants = connect.tenant
-                                .Where(t => t.isTerminated != 1 && t.leaseEnd >= today)
+                            // 1. Load only active units and required columns
+                            var activeUnits = connect.unit
+                                .AsNoTracking()
+                                .Where(u => u.status == "active")
+                                .Select(u => new
+                                {
+                                    u.Uid,
+                                    u.unitName,
+                                    u.price,
+                                    u.beds,
+                                    u.sqm,
+                                    u.floor,
+                                    u.description,
+                                    u.address,
+                                    u.videoUrl,
+                                    u.status,
+                                    u.maxOccupants
+                                })
                                 .ToList();
-                            var coOccupants = connect.co_occupant.ToList();
 
-                            // Build availability per unit
+                            var activeUnitIds = activeUnits
+                                .Select(u => u.Uid)
+                                .ToList();
+
+                            // 2. Load only active tenants belonging to active units
+                            var liveTenants = connect.tenant
+                                .AsNoTracking()
+                                .Where(t =>
+                                    activeUnitIds.Contains(t.unitId) &&
+                                    t.isTerminated != 1 &&
+                                    t.leaseEnd >= today)
+                                .Select(t => new
+                                {
+                                    t.Tid,
+                                    t.unitId,
+                                    t.occupancyTypeId
+                                })
+                                .ToList();
+
+                            // One active tenant lookup per unit
+                            var tenantByUnit = liveTenants
+                                .GroupBy(t => t.unitId)
+                                .ToDictionary(g => g.Key, g => g.First());
+
+                            // 3. Count only relevant co-occupants in the database
+                            var liveTenantIds = liveTenants
+                                .Select(t => t.Tid)
+                                .Distinct()
+                                .ToList();
+
+                            var coOccupantCounts = connect.co_occupant
+                                .AsNoTracking()
+                                .Where(c => liveTenantIds.Contains(c.Tid))
+                                .GroupBy(c => c.Tid)
+                                .Select(g => new
+                                {
+                                    Tid = g.Key,
+                                    Count = g.Count()
+                                })
+                                .ToList()
+                                .ToDictionary(x => x.Tid, x => x.Count);
+
+                            // 4. Calculate availability per unit
                             var availability = activeUnits.Select(u =>
                             {
-                                var mainTenant = liveTenants.FirstOrDefault(t => t.unitId == u.Uid);
-
-                                if (mainTenant == null)
+                                if (!tenantByUnit.ContainsKey(u.Uid))
                                 {
                                     // Fully vacant
                                     return new
@@ -1861,12 +1914,30 @@ namespace WebApplication1.Controllers
                                     };
                                 }
 
-                                int headcount = 1 + coOccupants.Count(c => c.Tid == mainTenant.Tid);
-                                int open = Math.Max(0, u.maxOccupants - headcount);
+                                var mainTenant = tenantByUnit[u.Uid];
 
-                                // Only Bedspace (3) stays listable while it has open slots
-                                bool joinable = UnitAvailabilityHelper.HasOpenBedspace(
-                                    mainTenant.occupancyTypeId, u.maxOccupants, headcount);
+                                int coCount = 0;
+
+                                coOccupantCounts.TryGetValue(
+                                    mainTenant.Tid,
+                                    out coCount
+                                );
+
+                                int headcount = 1 + coCount;
+
+                                int open = Math.Max(
+                                    0,
+                                    u.maxOccupants - headcount
+                                );
+
+                                // Only Bedspace (3) stays listable
+                                // while it has available slots
+                                bool joinable =
+                                    UnitAvailabilityHelper.HasOpenBedspace(
+                                        mainTenant.occupancyTypeId,
+                                        u.maxOccupants,
+                                        headcount
+                                    );
 
                                 return new
                                 {
@@ -1876,32 +1947,96 @@ namespace WebApplication1.Controllers
                                     slotsOpen = open,
                                     totalOccupants = headcount
                                 };
+
                             }).ToList();
 
-                            var availableIds = availability.Where(a => a.available).Select(a => a.Uid).ToList();
+                            // Fast availability lookup
+                            var availabilityLookup = availability
+                                .ToDictionary(a => a.Uid);
+
+                            // 5. Keep only available units
+                            var availableIds = availability
+                                .Where(a => a.available)
+                                .Select(a => a.Uid)
+                                .ToList();
 
                             var units = activeUnits
                                 .Where(u => availableIds.Contains(u.Uid))
                                 .OrderBy(u => u.unitName)
                                 .ToList();
 
-                            var unitIds = units.Select(u => u.Uid).ToList();
-
-                            var images = connect.unit_image
-                                .Where(i => unitIds.Contains(i.Uid))
-                                .OrderBy(i => i.displayOrder)
-                                .Select(i => new { i.Uid, i.imageUrl })
+                            var unitIds = units
+                                .Select(u => u.Uid)
                                 .ToList();
 
-                            var amenities = (from ua in connect.unit_amenity
-                                             join a in connect.amenity on ua.amenityId equals a.id
-                                             where unitIds.Contains(ua.Uid)
-                                             select new { ua.Uid, a.name })
-                                            .ToList();
+                            // 6. Load only the FIRST image per available unit
 
+                            // Load only the first image per available unit
+                            var firstImageOrders = connect.unit_image
+                                .AsNoTracking()
+                                .Where(i => unitIds.Contains(i.Uid))
+                                .GroupBy(i => i.Uid)
+                                .Select(g => new
+                                {
+                                    Uid = g.Key,
+                                    FirstDisplayOrder = g.Min(x => x.displayOrder)
+                                });
+
+                            var images = (
+                                from i in connect.unit_image.AsNoTracking()
+                                join first in firstImageOrders
+                                    on new { i.Uid, i.displayOrder }
+                                    equals new
+                                    {
+                                        first.Uid,
+                                        displayOrder = first.FirstDisplayOrder
+                                    }
+                                select new
+                                {
+                                    i.Uid,
+                                    i.imageUrl
+                                }
+                            ).ToList();
+
+                            var imageLookup = images
+                                .GroupBy(i => i.Uid)
+                                .ToDictionary(
+                                    g => g.Key,
+                                    g => g.Select(i => i.imageUrl).FirstOrDefault()
+                                );
+                            // 7. Load only amenities belonging to available units
+                            var amenities = (
+                                from ua in connect.unit_amenity.AsNoTracking()
+                                join a in connect.amenity.AsNoTracking()
+                                    on ua.amenityId equals a.id
+                                where unitIds.Contains(ua.Uid)
+                                select new
+                                {
+                                    ua.Uid,
+                                    a.name
+                                }
+                            ).ToList();
+
+                            // Group amenities for quick lookup
+                            var amenityLookup = amenities
+                                .GroupBy(a => a.Uid)
+                                .ToDictionary(
+                                    g => g.Key,
+                                    g => g.Select(a => a.name).ToList()
+                                );
+
+                            // 8. Build final response
                             var data = units.Select(u =>
                             {
-                                var av = availability.First(a => a.Uid == u.Uid);
+                                var av = availabilityLookup[u.Uid];
+
+                                var unitImages = imageLookup.ContainsKey(u.Uid)
+                                    ? new List<string> { imageLookup[u.Uid] }
+                                    : new List<string>();
+
+                                var unitAmenities = amenityLookup.ContainsKey(u.Uid)
+                                    ? amenityLookup[u.Uid]
+                                    : new List<string>();
 
                                 return new
                                 {
@@ -1917,27 +2052,20 @@ namespace WebApplication1.Controllers
                                     status = u.status,
                                     maxOccupants = u.maxOccupants,
 
-                                    // Bedspace info for the renter-facing badge
                                     joinable = av.joinable,
                                     slotsOpen = av.slotsOpen,
                                     currentOccupants = av.totalOccupants,
+
                                     availabilityLabel = av.joinable
-                                        ? ("Bedspace \u00b7 " + av.slotsOpen + " slot(s) open")
+                                        ? ("Bedspace · " + av.slotsOpen + " slot(s) open")
                                         : "Vacant",
 
-                                    images = images
-                                        .Where(i => i.Uid == u.Uid)
-                                        .Select(i => i.imageUrl)
-                                        .Take(1)
-                                        .ToList(),
-
-                                    amenities = amenities
-                                        .Where(a => a.Uid == u.Uid)
-                                        .Select(a => a.name)
-                                        .ToList()
+                                    images = unitImages,
+                                    amenities = unitAmenities
                                 };
                             }).ToList();
 
+                            // 9. Build filter options
                             var bedOptions = units
                                 .Where(u => !string.IsNullOrEmpty(u.beds))
                                 .Select(u => u.beds)
@@ -1946,6 +2074,7 @@ namespace WebApplication1.Controllers
                                 .ToList();
 
                             var amenityOptions = connect.amenity
+                                .AsNoTracking()
                                 .OrderBy(a => a.name)
                                 .Select(a => a.name)
                                 .ToList();
@@ -1956,26 +2085,188 @@ namespace WebApplication1.Controllers
                                 .OrderBy(x => x)
                                 .ToList();
 
-                            
+                            // 10. Return existing response structure
                             return new
                             {
                                 success = true,
                                 data = data,
                                 bedOptions = bedOptions,
                                 amenityOptions = amenityOptions,
-                                rentTypeOptions = rentTypeOptions,
+                                rentTypeOptions = rentTypeOptions
                             };
                         }
                     }
-                    );
-                return LargeJson(payload);
+                );
 
+                return LargeJson(payload);
             }
             catch (Exception ex)
             {
-                return LargeJson(new { success = false, message = ErrorHandling(ex) });
+                System.Diagnostics.Trace.TraceError(
+                    "[GetBrowseUnits] " + ex.ToString()
+                );
+
+                return LargeJson(new
+                {
+                    success = false,
+                    message = "Unable to load available units. Please try again."
+                });
             }
         }
+
+
+        //public ActionResult GetBrowseUnits()
+        //{
+        //    try
+        //    {
+        //        var payload = CacheHelper.GetOrAdd(
+        //            "all-browse-units",
+        //            1,
+        //            () =>
+        //            {
+        //                using (var connect = new DB_Context())
+        //                {
+        //                    var today = DateTime.Today;
+
+        //                    var activeUnits = connect.unit.Where(u => u.status == "active").ToList();
+        //                    var liveTenants = connect.tenant
+        //                        .Where(t => t.isTerminated != 1 && t.leaseEnd >= today)
+        //                        .ToList();
+        //                    var coOccupants = connect.co_occupant.ToList();
+
+        //                    // Build availability per unit
+        //                    var availability = activeUnits.Select(u =>
+        //                    {
+        //                        var mainTenant = liveTenants.FirstOrDefault(t => t.unitId == u.Uid);
+
+        //                        if (mainTenant == null)
+        //                        {
+        //                            // Fully vacant
+        //                            return new
+        //                            {
+        //                                Uid = u.Uid,
+        //                                available = true,
+        //                                joinable = false,
+        //                                slotsOpen = u.maxOccupants,
+        //                                totalOccupants = 0
+        //                            };
+        //                        }
+
+        //                        int headcount = 1 + coOccupants.Count(c => c.Tid == mainTenant.Tid);
+        //                        int open = Math.Max(0, u.maxOccupants - headcount);
+
+        //                        // Only Bedspace (3) stays listable while it has open slots
+        //                        bool joinable = UnitAvailabilityHelper.HasOpenBedspace(
+        //                            mainTenant.occupancyTypeId, u.maxOccupants, headcount);
+
+        //                        return new
+        //                        {
+        //                            Uid = u.Uid,
+        //                            available = joinable,
+        //                            joinable = joinable,
+        //                            slotsOpen = open,
+        //                            totalOccupants = headcount
+        //                        };
+        //                    }).ToList();
+
+        //                    var availableIds = availability.Where(a => a.available).Select(a => a.Uid).ToList();
+
+        //                    var units = activeUnits
+        //                        .Where(u => availableIds.Contains(u.Uid))
+        //                        .OrderBy(u => u.unitName)
+        //                        .ToList();
+
+        //                    var unitIds = units.Select(u => u.Uid).ToList();
+
+        //                    var images = connect.unit_image
+        //                        .Where(i => unitIds.Contains(i.Uid))
+        //                        .OrderBy(i => i.displayOrder)
+        //                        .Select(i => new { i.Uid, i.imageUrl })
+        //                        .ToList();
+
+        //                    var amenities = (from ua in connect.unit_amenity
+        //                                     join a in connect.amenity on ua.amenityId equals a.id
+        //                                     where unitIds.Contains(ua.Uid)
+        //                                     select new { ua.Uid, a.name })
+        //                                    .ToList();
+
+        //                    var data = units.Select(u =>
+        //                    {
+        //                        var av = availability.First(a => a.Uid == u.Uid);
+
+        //                        return new
+        //                        {
+        //                            id = u.Uid,
+        //                            name = u.unitName,
+        //                            price = u.price,
+        //                            beds = u.beds,
+        //                            sqm = u.sqm,
+        //                            floor = u.floor,
+        //                            description = u.description ?? "",
+        //                            address = u.address ?? "",
+        //                            videoUrl = u.videoUrl,
+        //                            status = u.status,
+        //                            maxOccupants = u.maxOccupants,
+
+        //                            // Bedspace info for the renter-facing badge
+        //                            joinable = av.joinable,
+        //                            slotsOpen = av.slotsOpen,
+        //                            currentOccupants = av.totalOccupants,
+        //                            availabilityLabel = av.joinable
+        //                                ? ("Bedspace \u00b7 " + av.slotsOpen + " slot(s) open")
+        //                                : "Vacant",
+
+        //                            images = images
+        //                                .Where(i => i.Uid == u.Uid)
+        //                                .Select(i => i.imageUrl)
+        //                                .Take(1)
+        //                                .ToList(),
+
+        //                            amenities = amenities
+        //                                .Where(a => a.Uid == u.Uid)
+        //                                .Select(a => a.name)
+        //                                .ToList()
+        //                        };
+        //                    }).ToList();
+
+        //                    var bedOptions = units
+        //                        .Where(u => !string.IsNullOrEmpty(u.beds))
+        //                        .Select(u => u.beds)
+        //                        .Distinct()
+        //                        .OrderBy(b => b)
+        //                        .ToList();
+
+        //                    var amenityOptions = connect.amenity
+        //                        .OrderBy(a => a.name)
+        //                        .Select(a => a.name)
+        //                        .ToList();
+
+        //                    var rentTypeOptions = data
+        //                        .Select(u => u.joinable ? "Bedspace" : "Vacant")
+        //                        .Distinct()
+        //                        .OrderBy(x => x)
+        //                        .ToList();
+
+
+        //                    return new
+        //                    {
+        //                        success = true,
+        //                        data = data,
+        //                        bedOptions = bedOptions,
+        //                        amenityOptions = amenityOptions,
+        //                        rentTypeOptions = rentTypeOptions,
+        //                    };
+        //                }
+        //            }
+        //            );
+        //        return LargeJson(payload);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return LargeJson(new { success = false, message = ErrorHandling(ex) });
+        //    }
+        //}
 
         // ============================================================
         // Paste both actions into SystemController
@@ -1993,6 +2284,144 @@ namespace WebApplication1.Controllers
         // Reads the unit chosen by SetSelectedUnit and returns everything the
         // detail page needs: the unit, its occupancy, and similar units.
 
+        //[HttpGet]
+        //public ActionResult GetUnitDetail()
+        //{
+        //    try
+        //    {
+        //        int selectedUid;
+        //        var raw = Session["SelectedUid"];
+
+        //        if (raw == null || !int.TryParse(raw.ToString(), out selectedUid))
+        //            return LargeJson(new { success = false, message = "No unit selected." });
+
+        //        using (var connect = new DB_Context())
+        //        {
+        //            var today = DateTime.Today;
+
+        //            var u = connect.unit.FirstOrDefault(x => x.Uid == selectedUid);
+        //            if (u == null)
+        //                return LargeJson(new { success = false, message = "Unit not found." });
+
+        //            // ---- Occupancy ----
+        //            // Vacant   : no live tenant
+        //            // Expiring : live tenant whose lease ends within 45 days
+        //            // Occupied : live tenant
+        //            var tenant = connect.tenant
+        //                .Where(t => t.unitId == u.Uid && t.isTerminated != 1 && t.leaseEnd >= today)
+        //                .OrderByDescending(t => t.leaseEnd)
+        //                .FirstOrDefault();
+
+        //            int totalOccupants = 0;
+        //            int slotsOpen = Math.Max(0, u.maxOccupants);
+        //            bool joinable = false;
+        //            bool isAvailable = u.status == "active";
+        //            string occupancy = "Vacant";
+        //            if (tenant != null)
+        //            {
+        //                totalOccupants = 1 + connect.co_occupant.Count(c => c.Tid == tenant.Tid);
+        //                slotsOpen = Math.Max(0, u.maxOccupants - totalOccupants);
+        //                joinable = UnitAvailabilityHelper.HasOpenBedspace(
+        //                    tenant.occupancyTypeId, u.maxOccupants, totalOccupants);
+        //                isAvailable = u.status == "active" && joinable;
+
+        //                if (joinable)
+        //                    occupancy = "Bedspace \u00b7 " + slotsOpen + " slot(s) open";
+        //                else
+        //                {
+        //                    var daysLeft = (tenant.leaseEnd - today).TotalDays;
+        //                    occupancy = (daysLeft <= 45) ? "Expiring" : "Occupied";
+        //                }
+        //            }
+
+        //            // ---- Images and amenities ----
+        //            var images = connect.unit_image
+        //                .Where(i => i.Uid == u.Uid)
+        //                .OrderBy(i => i.displayOrder)
+        //                .Select(i => i.imageUrl)
+        //                .ToList();
+
+        //            var amenities = (from ua in connect.unit_amenity
+        //                             join a in connect.amenity on ua.amenityId equals a.id
+        //                             where ua.Uid == u.Uid
+        //                             select a.name)
+        //                            .ToList();
+        //            var colorCode = connect.unit.Select(x => x.status == "active" ? "#22C55E" : "#EF4444");
+
+        //            var unit = new
+        //            {
+        //                id = u.Uid,
+        //                name = u.unitName,
+        //                price = u.price,
+        //                beds = u.beds,
+        //                sqm = u.sqm,
+        //                floor = u.floor,
+        //                description = u.description ?? "",
+        //                address = u.address ?? "",
+        //                video = u.videoUrl,
+        //                colorCode,
+        //                maxOccupants = u.maxOccupants,
+        //                joinable = joinable,
+        //                slotsOpen = slotsOpen,
+        //                currentOccupants = totalOccupants,
+        //                images = images,
+        //                amenities = amenities
+        //            };
+
+        //            // ---- Similar units: same type, active, still vacant ----
+        //            var occupiedUnitIds = connect.tenant
+        //                .Where(t => t.isTerminated != 1 && t.leaseEnd >= today)
+        //                .Select(t => t.unitId)
+        //                .Distinct()
+        //                .ToList();
+
+        //            var related = connect.unit
+        //                .Where(x => x.Uid != u.Uid
+        //                            && x.status == "active"
+        //                            && x.beds == u.beds
+        //                            && !occupiedUnitIds.Contains(x.Uid))
+        //                .OrderBy(x => x.unitName)
+        //                .Take(3)
+        //                .ToList();
+
+        //            var relatedIds = related.Select(x => x.Uid).ToList();
+
+        //            var relatedImages = connect.unit_image
+        //                .Where(i => relatedIds.Contains(i.Uid))
+        //                .OrderBy(i => i.displayOrder)
+        //                .Select(i => new { i.Uid, i.imageUrl })
+        //                .ToList();
+
+        //            var relatedUnits = related.Select(x => new
+        //            {
+        //                id = x.Uid,
+        //                name = x.unitName,
+        //                price = x.price,
+        //                sqm = x.sqm,
+        //                floor = x.floor,
+        //                image = relatedImages
+        //                    .Where(i => i.Uid == x.Uid)
+        //                    .Select(i => i.imageUrl)
+        //                    .FirstOrDefault()
+        //            }).ToList();
+
+        //            return LargeJson(new
+        //            {
+        //                success = true,
+        //                unit = unit,
+        //                occupancy = occupancy,
+        //                isAvailable = isAvailable,
+        //                relatedUnits = relatedUnits
+        //            });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return LargeJson(new { success = false, message = ex.Message });
+        //    }
+        //}
+
+
         [HttpGet]
         public ActionResult GetUnitDetail()
         {
@@ -2002,61 +2431,110 @@ namespace WebApplication1.Controllers
                 var raw = Session["SelectedUid"];
 
                 if (raw == null || !int.TryParse(raw.ToString(), out selectedUid))
-                    return LargeJson(new { success = false, message = "No unit selected." });
+                {
+                    return LargeJson(new
+                    {
+                        success = false,
+                        message = "No unit selected."
+                    });
+                }
 
                 using (var connect = new DB_Context())
                 {
                     var today = DateTime.Today;
 
-                    var u = connect.unit.FirstOrDefault(x => x.Uid == selectedUid);
-                    if (u == null)
-                        return LargeJson(new { success = false, message = "Unit not found." });
+                    // 1. Get selected unit
+                    var u = connect.unit
+                        .AsNoTracking()
+                        .FirstOrDefault(x => x.Uid == selectedUid);
 
-                    // ---- Occupancy ----
-                    // Vacant   : no live tenant
-                    // Expiring : live tenant whose lease ends within 45 days
-                    // Occupied : live tenant
+                    if (u == null)
+                    {
+                        return LargeJson(new
+                        {
+                            success = false,
+                            message = "Unit not found."
+                        });
+                    }
+
+                    // 2. Get current live tenant
                     var tenant = connect.tenant
-                        .Where(t => t.unitId == u.Uid && t.isTerminated != 1 && t.leaseEnd >= today)
+                        .AsNoTracking()
+                        .Where(t =>
+                            t.unitId == u.Uid &&
+                            t.isTerminated != 1 &&
+                            t.leaseEnd >= today)
                         .OrderByDescending(t => t.leaseEnd)
                         .FirstOrDefault();
 
+                    // 3. Calculate occupancy and availability
                     int totalOccupants = 0;
                     int slotsOpen = Math.Max(0, u.maxOccupants);
                     bool joinable = false;
                     bool isAvailable = u.status == "active";
                     string occupancy = "Vacant";
+
                     if (tenant != null)
                     {
-                        totalOccupants = 1 + connect.co_occupant.Count(c => c.Tid == tenant.Tid);
-                        slotsOpen = Math.Max(0, u.maxOccupants - totalOccupants);
+                        int coOccupantCount = connect.co_occupant
+                            .AsNoTracking()
+                            .Count(c => c.Tid == tenant.Tid);
+
+                        totalOccupants = 1 + coOccupantCount;
+
+                        slotsOpen = Math.Max(
+                            0,
+                            u.maxOccupants - totalOccupants
+                        );
+
                         joinable = UnitAvailabilityHelper.HasOpenBedspace(
-                            tenant.occupancyTypeId, u.maxOccupants, totalOccupants);
+                            tenant.occupancyTypeId,
+                            u.maxOccupants,
+                            totalOccupants
+                        );
+
                         isAvailable = u.status == "active" && joinable;
 
                         if (joinable)
-                            occupancy = "Bedspace \u00b7 " + slotsOpen + " slot(s) open";
+                        {
+                            occupancy = "Bedspace · " +
+                                slotsOpen + " slot(s) open";
+                        }
                         else
                         {
                             var daysLeft = (tenant.leaseEnd - today).TotalDays;
-                            occupancy = (daysLeft <= 45) ? "Expiring" : "Occupied";
+
+                            occupancy = daysLeft <= 45
+                                ? "Expiring"
+                                : "Occupied";
                         }
                     }
 
-                    // ---- Images and amenities ----
+                    // 4. Get all images for the selected unit
+                    // All images are retained for the unit detail gallery.
                     var images = connect.unit_image
+                        .AsNoTracking()
                         .Where(i => i.Uid == u.Uid)
                         .OrderBy(i => i.displayOrder)
                         .Select(i => i.imageUrl)
                         .ToList();
 
-                    var amenities = (from ua in connect.unit_amenity
-                                     join a in connect.amenity on ua.amenityId equals a.id
-                                     where ua.Uid == u.Uid
-                                     select a.name)
-                                    .ToList();
-                    var colorCode = connect.unit.Select(x => x.status == "active" ? "#22C55E" : "#EF4444");
+                    // 5. Get unit amenities
+                    var amenities = (
+                        from ua in connect.unit_amenity.AsNoTracking()
+                        join a in connect.amenity.AsNoTracking()
+                            on ua.amenityId equals a.id
+                        where ua.Uid == u.Uid
+                        select a.name
+                    ).ToList();
 
+                    // 6. Generate color code directly.
+                    // IMPORTANT: Do not return a deferred EF query here.
+                    string colorCode = u.status == "active"
+                        ? "#22C55E"
+                        : "#EF4444";
+
+                    // 7. Build selected unit response
                     var unit = new
                     {
                         id = u.Uid,
@@ -2068,7 +2546,7 @@ namespace WebApplication1.Controllers
                         description = u.description ?? "",
                         address = u.address ?? "",
                         video = u.videoUrl,
-                        colorCode,
+                        colorCode = colorCode,
                         maxOccupants = u.maxOccupants,
                         joinable = joinable,
                         slotsOpen = slotsOpen,
@@ -2077,30 +2555,76 @@ namespace WebApplication1.Controllers
                         amenities = amenities
                     };
 
-                    // ---- Similar units: same type, active, still vacant ----
+                    // 8. Get IDs of units with live tenants
                     var occupiedUnitIds = connect.tenant
-                        .Where(t => t.isTerminated != 1 && t.leaseEnd >= today)
+                        .AsNoTracking()
+                        .Where(t =>
+                            t.isTerminated != 1 &&
+                            t.leaseEnd >= today)
                         .Select(t => t.unitId)
                         .Distinct()
                         .ToList();
 
+                    // 9. Get three similar active and vacant units
                     var related = connect.unit
-                        .Where(x => x.Uid != u.Uid
-                                    && x.status == "active"
-                                    && x.beds == u.beds
-                                    && !occupiedUnitIds.Contains(x.Uid))
+                        .AsNoTracking()
+                        .Where(x =>
+                            x.Uid != u.Uid &&
+                            x.status == "active" &&
+                            x.beds == u.beds &&
+                            !occupiedUnitIds.Contains(x.Uid))
                         .OrderBy(x => x.unitName)
                         .Take(3)
+                        .Select(x => new
+                        {
+                            x.Uid,
+                            x.unitName,
+                            x.price,
+                            x.sqm,
+                            x.floor
+                        })
                         .ToList();
 
-                    var relatedIds = related.Select(x => x.Uid).ToList();
-
-                    var relatedImages = connect.unit_image
-                        .Where(i => relatedIds.Contains(i.Uid))
-                        .OrderBy(i => i.displayOrder)
-                        .Select(i => new { i.Uid, i.imageUrl })
+                    var relatedIds = related
+                        .Select(x => x.Uid)
                         .ToList();
 
+                    // 10. Retrieve only the first image per related unit
+                    var firstImageOrders =
+                        from i in connect.unit_image.AsNoTracking()
+                        where relatedIds.Contains(i.Uid)
+                        group i by i.Uid into g
+                        select new
+                        {
+                            Uid = g.Key,
+                            FirstDisplayOrder = g.Min(x => x.displayOrder)
+                        };
+
+                    var relatedImages = (
+                        from i in connect.unit_image.AsNoTracking()
+                        join first in firstImageOrders
+                            on new { i.Uid, i.displayOrder }
+                            equals new
+                            {
+                                first.Uid,
+                                displayOrder = first.FirstDisplayOrder
+                            }
+                        select new
+                        {
+                            i.Uid,
+                            i.imageUrl
+                        }
+                    ).ToList();
+
+                    // 11. Build related image lookup
+                    var relatedImageLookup = relatedImages
+                        .GroupBy(i => i.Uid)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(i => i.imageUrl).FirstOrDefault()
+                        );
+
+                    // 12. Build related units response
                     var relatedUnits = related.Select(x => new
                     {
                         id = x.Uid,
@@ -2108,12 +2632,12 @@ namespace WebApplication1.Controllers
                         price = x.price,
                         sqm = x.sqm,
                         floor = x.floor,
-                        image = relatedImages
-                            .Where(i => i.Uid == x.Uid)
-                            .Select(i => i.imageUrl)
-                            .FirstOrDefault()
+                        image = relatedImageLookup.ContainsKey(x.Uid)
+                            ? relatedImageLookup[x.Uid]
+                            : null
                     }).ToList();
 
+                    // 13. Return response
                     return LargeJson(new
                     {
                         success = true,
@@ -2126,9 +2650,18 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                return LargeJson(new { success = false, message = ex.Message });
+                System.Diagnostics.Trace.TraceError(
+                    "[GetUnitDetail] " + ex.ToString()
+                );
+
+                return LargeJson(new
+                {
+                    success = false,
+                    message = "Unable to load unit details. Please try again."
+                });
             }
         }
+
 
         [HttpGet]
         public JsonResult GetMyBookings()
