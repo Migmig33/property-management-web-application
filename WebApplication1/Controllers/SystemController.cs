@@ -3131,7 +3131,7 @@ namespace WebApplication1.Controllers
 
                     string message =
                         $"Hello {tenant.name},\n\n" +
-                        $"This is to inform you that your Post-Dated Check (PDC) payment of {payment.amount:C} due on {payment.dueDate} was unsuccessful.\n\n" +
+                        $"This is to inform you that your Post-Dated Check (PDC) payment of PHP {payment.amount:N2} due on {payment.dueDate} was unsuccessful.\n\n" +
                         "Please arrange an alternative payment method and settle your outstanding balance as soon as possible.\n\n" +
                         "Thank you.";
 
