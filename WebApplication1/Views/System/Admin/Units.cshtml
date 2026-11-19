@@ -332,11 +332,11 @@
                         <td class="px-5 py-3">
                             <span class="px-2.5 py-1 rounded-full text-[11px] font-medium"
                                   ng-class="{
-            'bg-emerald-50 text-emerald-700': unit.occupancy === 'Vacant',
-            'bg-blue-50 text-blue-700': unit.occupancy === 'Occupied',
-            'bg-amber-50 text-amber-700': unit.occupancy === 'Expiring'
+              'bg-amber-50 text-amber-600': unit.status !== 'active' || unit.occupancy === 'Expiring',
+              'bg-emerald-50 text-emerald-600': unit.status === 'active' && unit.occupancy === 'Vacant',
+              'bg-blue-50 text-blue-600': unit.status === 'active' && unit.occupancy === 'Occupied'
           }">
-                                {{ unit.occupancy }}
+                                {{ unit.status !== 'active' ? 'Under Maintenance' : unit.occupancy }}
                             </span>
                         </td>
                         <td class="px-5 py-3">

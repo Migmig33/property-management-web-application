@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using WebApplication1.Filter;
@@ -10,6 +12,7 @@ using WebApplication1.Helper;
 using WebApplication1.Models.Context;
 using WebApplication1.Models.Tables;
 using WebApplication1.Services;
+
 
 namespace WebApplication1.Controllers
 {
@@ -240,7 +243,7 @@ namespace WebApplication1.Controllers
 
                     connect.tenant_profile_change_request.Add(tenantRequest);
                     connect.SaveChanges();
-
+                    Session.Remove("VerifiedTenantPhone");
                     AuditLogger.Log(
                         "user",
                         "info",
@@ -437,6 +440,202 @@ namespace WebApplication1.Controllers
             {
                 var a = connect.admin.FirstOrDefault(x => x.email == email);
                 return a != null ? a.name : email;
+            }
+        }
+        private string HashPhoneVerificationCode(string code, string phone)
+        {
+            using (var sha = SHA256.Create())
+            {
+                var input = code + "|" + phone + "|" + Session.SessionID;
+                var bytes = Encoding.UTF8.GetBytes(input);
+                return Convert.ToBase64String(sha.ComputeHash(bytes));
+            }
+        }
+        [HttpPost]
+        public JsonResult SendPhoneVerificationCode(string phone)
+        {
+            try
+            {
+                var normalizedPhone = SmsServices.NormalizePhone(phone);
+
+                if (string.IsNullOrWhiteSpace(normalizedPhone))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Please enter a valid phone number."
+                    });
+                }
+
+                // Prevent repeated SMS requests within 60 seconds.
+                var lastSent = Session["TenantPhoneOtpLastSentAt"] as DateTime?;
+
+                if (lastSent.HasValue &&
+                    (DateTime.UtcNow - lastSent.Value).TotalSeconds < 60)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Please wait 60 seconds before requesting another code."
+                    });
+                }
+
+                // Invalidate previous verification.
+                Session.Remove("VerifiedTenantPhone");
+
+                // Generate a secure six-digit OTP.
+                byte[] randomBytes = new byte[4];
+
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    rng.GetBytes(randomBytes);
+                }
+
+                int randomNumber = BitConverter.ToInt32(randomBytes, 0) & 0x7fffffff;
+                string code = (randomNumber % 900000 + 100000).ToString();
+
+                string message =
+                    "GREEN RESIDENCES: Your phone verification code is " + code +
+                    ". This code expires in 5 minutes. Do not share this code with anyone.";
+
+                var error = SmsServices.SendSms(normalizedPhone, message);
+
+                if (error != null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Unable to send the SMS verification code."
+                    });
+                }
+
+                // Store OTP details in the server-side session.
+                Session["TenantPhoneOtpHash"] =
+                    HashPhoneVerificationCode(code, normalizedPhone);
+
+                Session["TenantPhoneOtpPhone"] = normalizedPhone;
+                Session["TenantPhoneOtpExpiry"] = DateTime.UtcNow.AddMinutes(5);
+                Session["TenantPhoneOtpAttempts"] = 0;
+                Session["TenantPhoneOtpLastSentAt"] = DateTime.UtcNow;
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Verification code sent successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                });
+            }
+        }
+        [HttpPost]
+        public JsonResult VerifyPhoneVerificationCode(string phone, string code)
+        {
+            try
+            {
+                var normalizedPhone = SmsServices.NormalizePhone(phone);
+
+                if (string.IsNullOrWhiteSpace(normalizedPhone) ||
+                    string.IsNullOrWhiteSpace(code))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid verification details."
+                    });
+                }
+
+                string storedPhone = Session["TenantPhoneOtpPhone"] as string;
+                string storedHash = Session["TenantPhoneOtpHash"] as string;
+                DateTime? expiry = Session["TenantPhoneOtpExpiry"] as DateTime?;
+
+                if (storedPhone == null || storedHash == null || !expiry.HasValue)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Please request a new verification code."
+                    });
+                }
+
+                if (!string.Equals(storedPhone, normalizedPhone, StringComparison.Ordinal))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "The verification code was sent to a different phone number."
+                    });
+                }
+
+                if (DateTime.UtcNow > expiry.Value)
+                {
+                    Session.Remove("TenantPhoneOtpHash");
+                    Session.Remove("TenantPhoneOtpPhone");
+                    Session.Remove("TenantPhoneOtpExpiry");
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Your verification code has expired. Please request a new one."
+                    });
+                }
+
+                int attempts = Convert.ToInt32(
+                    Session["TenantPhoneOtpAttempts"] ?? 0);
+
+                if (attempts >= 5)
+                {
+                    Session.Remove("TenantPhoneOtpHash");
+                    Session.Remove("TenantPhoneOtpPhone");
+                    Session.Remove("TenantPhoneOtpExpiry");
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Too many incorrect attempts. Please request a new code."
+                    });
+                }
+
+                Session["TenantPhoneOtpAttempts"] = attempts + 1;
+
+                string submittedHash =
+                    HashPhoneVerificationCode(code, normalizedPhone);
+
+                if (!string.Equals(storedHash, submittedHash, StringComparison.Ordinal))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Incorrect verification code. Please try again."
+                    });
+                }
+
+                // Mark this exact phone number as verified on the server.
+                Session["VerifiedTenantPhone"] = normalizedPhone;
+
+                Session.Remove("TenantPhoneOtpHash");
+                Session.Remove("TenantPhoneOtpPhone");
+                Session.Remove("TenantPhoneOtpExpiry");
+                Session.Remove("TenantPhoneOtpAttempts");
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Phone number successfully verified."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                });
             }
         }
     }

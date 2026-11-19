@@ -3736,6 +3736,7 @@
     $scope.isSavingProfile = false;
 
     $scope.startEditProfile = function () {
+        $scope.onProfilePhoneChanged();
         $scope.originalTenantProfile = angular.copy($scope.currentTenant);
         $scope.isEditingProfile = true;
     };
@@ -3986,6 +3987,90 @@
 
         }).finally(function () {
             $scope.isLoadingProfileRequests = false;
+        });
+    };
+    // Initial verification state
+    $scope.phoneVerification = {
+        code: '',
+        codeSent: false,
+        verified: false,
+        sending: false,
+        verifying: false,
+        error: ''
+    };
+
+    // Reset verification whenever the phone number changes
+    $scope.onProfilePhoneChanged = function () {
+        $scope.phoneVerification = {
+            code: '',
+            codeSent: false,
+            verified: false,
+            sending: false,
+            verifying: false,
+            error: ''
+        };
+    };
+
+    // Validate the phone number before enabling Send Verification
+    $scope.isPhoneInputValid = function () {
+        var phone = ($scope.currentTenant.phone || '').trim();
+
+        return /^\+?[0-9]{10,15}$/.test(phone);
+    };
+
+    // Send OTP
+    $scope.sendPhoneVerification = function () {
+        if (!$scope.isPhoneInputValid()) return;
+
+        $scope.phoneVerification.sending = true;
+        $scope.phoneVerification.error = '';
+
+        $http.post('/TenantPortal/SendPhoneVerificationCode', {
+            phone: $scope.currentTenant.phone
+        }).then(function (response) {
+
+            if (response.data.success) {
+                $scope.phoneVerification.codeSent = true;
+                $scope.phoneVerification.verified = false;
+                $scope.phoneVerification.code = '';
+            } else {
+                $scope.phoneVerification.error = response.data.message;
+            }
+
+        }, function () {
+            $scope.phoneVerification.error =
+                'Unable to send the verification code. Please try again.';
+        }).finally(function () {
+            $scope.phoneVerification.sending = false;
+        });
+    };
+
+    // Verify OTP
+    $scope.verifyPhoneVerification = function () {
+        if (!$scope.phoneVerification.code ||
+            $scope.phoneVerification.code.length !== 6) return;
+
+        $scope.phoneVerification.verifying = true;
+        $scope.phoneVerification.error = '';
+
+        $http.post('/TenantPortal/VerifyPhoneVerificationCode', {
+            phone: $scope.currentTenant.phone,
+            code: $scope.phoneVerification.code
+        }).then(function (response) {
+
+            if (response.data.success) {
+                $scope.phoneVerification.verified = true;
+                $scope.phoneVerification.codeSent = false;
+                $scope.phoneVerification.code = '';
+            } else {
+                $scope.phoneVerification.error = response.data.message;
+            }
+
+        }, function () {
+            $scope.phoneVerification.error =
+                'Unable to verify the code. Please try again.';
+        }).finally(function () {
+            $scope.phoneVerification.verifying = false;
         });
     };
 

@@ -75,7 +75,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Dashboard");
         }
-        [CheckSession(AllowedRoles = new[] { 2 })]
+        //[CheckSession(AllowedRoles = new[] { 2 })]
         public ActionResult Units()
         {
             return View("Admin/Units");
@@ -96,7 +96,7 @@ namespace WebApplication1.Controllers
         {
             return View("Admin/Maintenance");
         }
-        [CheckSession(AllowedRoles = new[] { 2 })]
+        //[CheckSession(AllowedRoles = new[] { 2 })]
 
         public ActionResult Payments()
         {
@@ -878,16 +878,78 @@ namespace WebApplication1.Controllers
                 return Json(new { success = false, message = ErrorHandling(ex) }, JsonRequestBehavior.AllowGet);
             }
         }
-        [HttpPost]
+        //[HttpPost]
+        //public JsonResult MarkPaymentsPaid(int Tid, int Uid, decimal amount, List<MonthItem> months)
+        //{
+        //    try
+        //    {
+        //        using (var db = new DB_Context())
+        //        {
+        //            foreach (var m in months)
+        //            {
+        //                // Match by Tid, Uid, and dueDate month/year
+        //                var existing = db.payment.FirstOrDefault(p =>
+        //                    p.Tid == Tid &&
+        //                    p.Uid == Uid &&
+        //                    p.dueDate.Month == m.Month &&
+        //                    p.dueDate.Year == m.Year &&
+        //                    p.paidDate == null
+        //                );
+
+        //                if (existing != null)
+        //                {
+        //                    // UPDATE — record exists but unpaid
+        //                    existing.paidDate = DateTime.Now;
+        //                }
+        //                else
+        //                {
+        //                    // Check if already paid (skip) or truly missing (insert)
+        //                    bool alreadyPaid = db.payment.Any(p =>
+        //                        p.Tid == Tid &&
+        //                        p.Uid == Uid &&
+        //                        p.dueDate.Month == m.Month &&
+        //                        p.dueDate.Year == m.Year &&
+        //                        p.paidDate != null
+        //                    );
+
+        //                    if (!alreadyPaid)
+        //                    {
+        //                        // INSERT — no record at all for this month
+        //                        db.payment.Add(new payment
+        //                        {
+        //                            Tid = Tid,
+        //                            Uid = Uid,
+        //                            amount = amount,
+        //                            dueDate = new DateTime(m.Year, m.Month, 1),
+        //                            paidDate = DateTime.Now,
+        //                            billingPeriod = new DateTime(m.Year, m.Month, 1).ToString("MMMM yyyy")
+        //                        });
+        //                    }
+        //                }
+        //            }
+
+        //            db.SaveChanges();
+        //            AuditLogger.Log("settings", "info", "Marked payments paid for tenant #" + Tid, CurrentUserName());
+        //            return Json(new { success = true, message = "Payments marked as paid." });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new { success = false, message = ErrorHandling(ex) });
+        //    }
+        //}
+
         public JsonResult MarkPaymentsPaid(int Tid, int Uid, decimal amount, List<MonthItem> months)
         {
             try
             {
                 using (var db = new DB_Context())
                 {
+                    List<string> newlyPaidMonths = new List<string>();
+                    DateTime paidAt = DateTime.Now;
+
                     foreach (var m in months)
                     {
-                        // Match by Tid, Uid, and dueDate month/year
                         var existing = db.payment.FirstOrDefault(p =>
                             p.Tid == Tid &&
                             p.Uid == Uid &&
@@ -898,12 +960,11 @@ namespace WebApplication1.Controllers
 
                         if (existing != null)
                         {
-                            // UPDATE — record exists but unpaid
-                            existing.paidDate = DateTime.Now;
+                            existing.paidDate = paidAt;
+                            newlyPaidMonths.Add(new DateTime(m.Year, m.Month, 1).ToString("MMMM yyyy"));
                         }
                         else
                         {
-                            // Check if already paid (skip) or truly missing (insert)
                             bool alreadyPaid = db.payment.Any(p =>
                                 p.Tid == Tid &&
                                 p.Uid == Uid &&
@@ -914,28 +975,111 @@ namespace WebApplication1.Controllers
 
                             if (!alreadyPaid)
                             {
-                                // INSERT — no record at all for this month
                                 db.payment.Add(new payment
                                 {
                                     Tid = Tid,
                                     Uid = Uid,
                                     amount = amount,
                                     dueDate = new DateTime(m.Year, m.Month, 1),
-                                    paidDate = DateTime.Now,
+                                    paidDate = paidAt,
                                     billingPeriod = new DateTime(m.Year, m.Month, 1).ToString("MMMM yyyy")
                                 });
+
+                                newlyPaidMonths.Add(new DateTime(m.Year, m.Month, 1).ToString("MMMM yyyy"));
                             }
                         }
                     }
 
+                    // Save payment records first.
                     db.SaveChanges();
-                    AuditLogger.Log("settings", "info", "Marked payments paid for tenant #" + Tid, CurrentUserName());
-                    return Json(new { success = true, message = "Payments marked as paid." });
+
+                    bool notificationFailed = false;
+
+                    // Send SMS only if at least one payment was newly marked as paid.
+                    if (newlyPaidMonths.Any())
+                    {
+                        var thatTenant = db.tenant.FirstOrDefault(t => t.Tid == Tid);
+
+                        if (thatTenant != null)
+                        {
+                            string periods = string.Join(", ", newlyPaidMonths.Distinct());
+
+                            string message = $"Hello {thatTenant.name},\n\n" +
+                                $"Your rental payment for {periods} has been successfully received and recorded as PAID.\n\n" +
+                                "Thank you for your payment!\n\n" +
+                                "GREEN RESIDENCES";
+
+                            string smsStatus = "Failed";
+
+                            try
+                            {
+                                var phone = SmsServices.NormalizePhone(thatTenant.phone);
+
+                                if (string.IsNullOrWhiteSpace(phone))
+                                {
+                                    notificationFailed = true;
+                                    smsStatus = "Invalid Number";
+                                }
+                                else
+                                {
+                                    var error = SmsServices.SendSms(phone, message);
+
+                                    notificationFailed = error != null;
+                                    smsStatus = notificationFailed ? "Failed" : "Sent";
+                                }
+                            }
+                            catch
+                            {
+                                notificationFailed = true;
+                                smsStatus = "Failed";
+                            }
+
+                            // Save SMS notification log.
+                            db.sms_log.Add(new sms_log
+                            {
+                                Tid = thatTenant.Tid,
+                                message = message,
+                                type = "PaymentConfirmation",
+                                status = smsStatus,
+                                sentAt = DateTime.Now
+                            });
+
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            notificationFailed = true;
+                        }
+                    }
+
+                    AuditLogger.Log(
+                        "settings",
+                        "info",
+                        "Marked payments paid for tenant #" + Tid,
+                        CurrentUserName()
+                    );
+
+                    string responseMessage = newlyPaidMonths.Any()
+                        ? (notificationFailed
+                            ? "Payments successfully marked as paid, but the tenant could not be notified by SMS."
+                            : "Payments successfully marked as paid, and the SMS notification was sent.")
+                        : "Payments marked as paid. No new payment records required notification.";
+
+                    return Json(new
+                    {
+                        success = true,
+                        notificationFailed,
+                        message = responseMessage
+                    });
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ErrorHandling(ex) });
+                return Json(new
+                {
+                    success = false,
+                    message = ErrorHandling(ex)
+                });
             }
         }
         // Get API

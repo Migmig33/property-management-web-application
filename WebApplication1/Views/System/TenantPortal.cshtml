@@ -162,14 +162,103 @@
                     <label class="text-[10px] font-bold text-green-300 uppercase tracking-widest">
                         Phone Number
                     </label>
+
                     <div class="relative">
-                        <lucide-icon name="phone" size="14" class="absolute left-3 top-3 text-green-500"></lucide-icon>
-                        <input type="number"
+                        <lucide-icon name="phone" size="14"
+                                     class="absolute left-3 top-3 text-green-500"></lucide-icon>
+
+                        <input type="text"
+                               inputmode="tel"
+                               autocomplete="tel"
+                               maxlength="16"
                                ng-model="currentTenant.phone"
+                               ng-change="onProfilePhoneChanged()"
+                               oninput="this.value = this.value.replace(/[^0-9+]/g, '').replace(/(?!^)\+/g, '')"
                                class="w-full bg-green-900/40 border border-green-600/50 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400 transition-all placeholder-green-700"
                                placeholder="Enter phone number">
                     </div>
                 </div>
+                <!-- PHONE VERIFICATION -->
+                <div class="mt-2 space-y-3">
+
+                    <button type="button"
+                            ng-click="sendPhoneVerification()"
+                            ng-disabled="!isPhoneInputValid() ||
+             phoneVerification.sending ||
+             phoneVerification.verified"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all"
+                            ng-class="phoneVerification.verified
+    ? 'bg-green-100 text-green-700'
+    : 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-900/40 disabled:text-green-500'">
+
+                        <lucide-icon ng-if="phoneVerification.sending"
+                                     name="loader-circle" size="14"
+                                     class="animate-spin"></lucide-icon>
+
+                        <lucide-icon ng-if="phoneVerification.verified"
+                                     name="check-circle" size="14"></lucide-icon>
+
+                        <lucide-icon ng-if="!phoneVerification.sending && !phoneVerification.verified"
+                                     name="message-square" size="14"></lucide-icon>
+
+                        {{ phoneVerification.sending
+? 'Sending Code...'
+: phoneVerification.verified
+    ? 'Phone Number Verified'
+    : 'Send Verification Code' }}
+                    </button>
+
+                    <!-- OTP INPUT -->
+                    <div ng-if="phoneVerification.codeSent && !phoneVerification.verified"
+                         class="space-y-2">
+
+                        <label class="text-[10px] font-bold text-green-300 uppercase tracking-widest">
+                            SMS Verification Code
+                        </label>
+
+                        <div class="flex gap-2">
+                            <input type="text"
+                                   inputmode="numeric"
+                                   maxlength="6"
+                                   ng-model="phoneVerification.code"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
+                                   placeholder="Enter 6-digit code"
+                                   class="flex-1 min-w-0 bg-green-900/40 border border-green-600/50 rounded-xl px-3 py-2.5 text-sm text-white tracking-widest focus:outline-none focus:border-green-400">
+
+                            <button type="button"
+                                    ng-click="verifyPhoneVerification()"
+                                    ng-disabled="!phoneVerification.code ||
+                     phoneVerification.code.length !== 6 ||
+                     phoneVerification.verifying"
+                                    class="px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed">
+
+                                {{ phoneVerification.verifying ? 'Checking...' : 'Verify' }}
+                            </button>
+                        </div>
+
+                        <p class="text-[10px] text-green-300/70">
+                            Enter the verification code sent to your phone number.
+                            The code expires after 5 minutes.
+                        </p>
+                    </div>
+
+                    <!-- VERIFIED MESSAGE -->
+                    <div ng-if="phoneVerification.verified"
+                         class="flex items-center gap-2 text-xs text-green-300 bg-green-800/40 border border-green-500/30 rounded-xl p-3">
+
+                        <lucide-icon name="shield-check" size="16"></lucide-icon>
+
+                        Your phone number has been successfully verified.
+                    </div>
+
+                    <!-- ERROR MESSAGE -->
+                    <p ng-if="phoneVerification.error"
+                       class="text-xs text-red-300">
+                        {{ phoneVerification.error }}
+                    </p>
+
+                </div>
+
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-bold text-green-300 uppercase tracking-widest">
@@ -177,7 +266,7 @@
                     </label>
                     <div class="relative">
                         <lucide-icon name="briefcase" size="14" class="absolute left-3 top-3 text-green-500"></lucide-icon>
-                        <input type="text"  oninput="this.value = this.value.replace(/[^a-zA-Z\sñÑ]/g, '')"
+                        <input type="text" oninput="this.value = this.value.replace(/[^a-zA-Z\sñÑ]/g, '')"
                                ng-model="currentTenant.occupation"
                                class="w-full bg-green-900/40 border border-green-600/50 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400 transition-all placeholder-green-700"
                                placeholder="Enter occupation">
@@ -207,7 +296,8 @@
                     </button>
 
                     <button type="button"
-                            class="rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            ng-disabled="!phoneVerification.verified || isSavingProfile"
+                            class="rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-40"
                             ng-click="openProfileChangeReasonModal()">
                         Save Changes
                     </button>
